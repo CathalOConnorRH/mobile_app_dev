@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "990155226845",
+    "project_id": "mobile-web-app-73407",
+    "storage_bucket": "mobile-web-app-73407.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990155226845:android:5a3567c38a6a06d408a534",
+        "android_client_info": {
+          "package_name": "ie.coconnor.mobileAppDev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxGd_c9pXDRq2yq5IaszA63ExTHjgzXnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990155226845:android:843b612341c5fe7008a534",
+        "android_client_info": {
+          "package_name": "ie.coconnor.mobileappdev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxGd_c9pXDRq2yq5IaszA63ExTHjgzXnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
