@@ -30,9 +30,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-
-      - name: Kotlin Linter
-        uses: vroy/gha-kotlin-linter@v4
             
       # Set Current Date As Env Variable
       - name: Set current date as env variable
