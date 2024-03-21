@@ -1,46 +1,62 @@
 package ie.coconnor.mobileappdev
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DrawerState
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
-import kotlinx.coroutines.launch
 
+/**
+ * A customizable [TopAppBar] for the application.
+ *
+ * @param modifier Modifier for styling or positioning the [TopAppBar].
+ * @param currentScreen The title to be displayed on the app bar.
+ * @param showBackButton Flag indicating whether the back navigation button should be shown.
+ * @param onBackButtonClick Callback for the back navigation button click event.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomAppBar(drawerState: DrawerState?, title: String) {
-    val coroutineScope = rememberCoroutineScope()
-
-    CenterAlignedTopAppBar(
+fun CustomAppBar(
+    modifier: Modifier = Modifier,
+    currentScreen: String = "",
+    showBackButton: Boolean = true,
+    onBackButtonClick: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(currentScreen) },
+        modifier = modifier,
         navigationIcon = {
-            if (drawerState != null) {
-                IconButton(onClick = {
-                    coroutineScope.launch {
-                        drawerState.open()
-                    }
-                }) {
-                    Icon(Icons.Filled.Menu, contentDescription = "")
+            if (showBackButton) {
+                // Show back navigation button if allowed
+                IconButton(onClick = onBackButtonClick) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        tint = Color.Black,
+                        contentDescription = stringResource(R.string.back_button)
+                    )
                 }
             }
-        },
-        title = { Text(text = title) }
+        }
     )
 }
 
-
-@Preview(widthDp = 300)
+/**
+ * A preview function for [CustomAppBar].
+ */
+@Preview
 @Composable
-fun PreviewCustomAppBar() {
-    MobileAppDevTheme {
-        CustomAppBar(drawerState = null, title = "Title")
-    }
-
+fun PreviewCustomTopAppBar() {
+    // Example usage with navigation controller
+    CustomAppBar(
+        currentScreen = "TopAppBar",
+        showBackButton = true,
+        onBackButtonClick = {  }
+    )
 }

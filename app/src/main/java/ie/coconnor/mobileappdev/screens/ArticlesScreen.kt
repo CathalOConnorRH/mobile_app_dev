@@ -10,16 +10,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import ie.coconnor.mobileappdev.CustomAppBar
 
 @Composable
-fun ArticlesScreen(drawerState: DrawerState) {
+fun ArticlesScreen() {
     Scaffold(
-        topBar = { CustomAppBar(
-            drawerState = drawerState,
-            title = "Articles"
-        ) }
-    ) { paddingValues ->
+        topBar = {
+            CustomAppBar(
+                currentScreen = "TopAppBar",
+                showBackButton = true,
+                onBackButtonClick = {  }
+            )
+        } ) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
