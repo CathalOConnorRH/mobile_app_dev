@@ -1,5 +1,6 @@
 package ie.coconnor.mobileappdev
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -31,19 +32,20 @@ class MainActivity : ComponentActivity() {
 
     private val authViewModel by viewModels<AuthViewModel>()
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MobileAppDevTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "LoginScreen") {
                         composable("LoginScreen") { LoginScreen() }
-                        composable("SignUpScreen") { SignUpScreen(navController = navController)}
+                        composable("SignUpScreen") { SignUpScreen(navController) }
 //                        composable(
 //                            route = "screen2/{name}",
 //                            arguments = listOf(navArgument("name") { type = NavType.StringType })
@@ -68,6 +70,7 @@ class MainActivity : ComponentActivity() {
                     }
 //                    LoginScreen()
                 }
+
             }
         }
     }
@@ -92,7 +95,7 @@ fun KeyboardAware(
 )
 
 @Composable
-fun ReplyAppPreview() {
+fun MobileAppDevPreview() {
     MobileAppDevTheme {
 
     }

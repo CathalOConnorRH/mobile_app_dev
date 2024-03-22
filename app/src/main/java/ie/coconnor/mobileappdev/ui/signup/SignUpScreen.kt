@@ -33,12 +33,15 @@ import ie.coconnor.mobileappdev.R
 
 @Composable
 fun SignUpScreen(navController: NavHostController) {
+
     Scaffold(
         topBar = {
             CustomAppBar(
                 currentScreen = "TopAppBar",
                 showBackButton = true,
-                onBackButtonClick = { navController.popBackStack() }
+                onBackButtonClick = {
+                    navController.popBackStack()
+                }
             )
         }     ) { paddingValues ->
         Column(

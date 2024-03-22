@@ -19,7 +19,7 @@ fun AboutScreen() {
             CustomAppBar(
                 currentScreen = "TopAppBar",
                 showBackButton = true,
-                onBackButtonClick = {  }
+                onBackButtonClick = { }
             )
         }
     ) { paddingValues ->
@@ -32,6 +32,7 @@ fun AboutScreen() {
         ) {
             Text(text = "About Screen")
         }
+
     }
 
 }

@@ -53,8 +53,7 @@ fun LoginScreenOld(navController: NavHostController) {
                 CustomAppBar(
                     currentScreen = "TopAppBar",
                     showBackButton = true,
-                    onBackButtonClick = {
-                    }
+                    onBackButtonClick = {  }
                 )
             }         ) { paddingValues ->
             Column(
@@ -89,7 +88,9 @@ fun LoginScreenOld(navController: NavHostController) {
                     var showPassword by remember { mutableStateOf(value = false) }
 
                     OutlinedTextField(
-                        modifier = Modifier.weight(1f).padding(start = 10.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 10.dp),
                         value = email,
                         onValueChange = { email = it },
                         shape = RoundedCornerShape(percent = 20),
@@ -98,7 +99,9 @@ fun LoginScreenOld(navController: NavHostController) {
                         )
                     Spacer(modifier = Modifier.width(8.dp))
                     OutlinedTextField(
-                        modifier = Modifier.weight(1f).padding(end = 10.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 10.dp),
                         value = password,
                         onValueChange = { password = it },
                         label = { Text("Password") },

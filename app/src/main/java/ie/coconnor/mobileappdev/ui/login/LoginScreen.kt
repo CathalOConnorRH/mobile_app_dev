@@ -66,68 +66,70 @@ fun LoginScreen(
         launcher.launch(intent)
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.primary
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .padding(16.dp)
-                .fillMaxSize()
-                .wrapContentSize(Alignment.TopCenter),
-            Arrangement.spacedBy(8.dp),
-            Alignment.CenterHorizontally
-        ) {
-            Image(
+    MobileAppDevTheme {
+        Scaffold(
+//            containerColor = MaterialTheme.colorScheme.primary
+        ) { paddingValues ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(paddingValues)
                     .padding(16.dp)
-                    .weight(1f),
-                painter = painterResource(R.drawable.red_hat_logo),
-                contentDescription = "app_logo",
-                contentScale = ContentScale.Fit,
-                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.tertiary)
-            )
-
-            Button(
-                onClick = {
-                    // TODO: Sign in with Google
-                    authViewModel.oneTapSignIn()
-                },
-                modifier = Modifier
-                    .size(width = 300.dp, height = 50.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
-                )
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.TopCenter),
+                Arrangement.spacedBy(8.dp),
+                Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_google_logo),
-                    contentDescription = ""
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .weight(1f),
+                    painter = painterResource(R.drawable.vector),
+                    contentDescription = "app_logo",
+                    contentScale = ContentScale.Fit,
+//                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.tertiary)
                 )
-                Text(
-                    text = "Sign in with Google",
-                    modifier = Modifier.padding(6.dp),
-                    color = Color.Black.copy(alpha = 0.5f)
-                )
-            }
 
-            if (DataProvider.authState == AuthState.SignedOut) {
                 Button(
                     onClick = {
-                        authViewModel.signInAnonymously()
+                        // TODO: Sign in with Google
+                        authViewModel.oneTapSignIn()
                     },
                     modifier = Modifier
-                        .size(width = 200.dp, height = 50.dp)
+                        .size(width = 300.dp, height = 50.dp)
+                        .fillMaxWidth()
                         .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(10.dp),
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = Color.White
+//                    )
                 ) {
-                    Text(
-                        text = "Skip",
-                        modifier = Modifier.padding(6.dp),
-                        color = MaterialTheme.colorScheme.tertiary
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_google_logo),
+                        contentDescription = ""
                     )
+                    Text(
+                        text = "Sign in with Google",
+                        modifier = Modifier.padding(6.dp),
+//                        color = Color.Black.copy(alpha = 0.5f)
+                    )
+                }
+
+                if (DataProvider.authState == AuthState.SignedOut) {
+                    Button(
+                        onClick = {
+                            authViewModel.signInAnonymously()
+                        },
+                        modifier = Modifier
+                            .size(width = 200.dp, height = 50.dp)
+                            .padding(horizontal = 16.dp),
+                    ) {
+                        Text(
+                            text = "Skip",
+                            modifier = Modifier.padding(6.dp),
+//                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }

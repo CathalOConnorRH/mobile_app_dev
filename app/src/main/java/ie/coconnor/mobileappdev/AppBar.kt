@@ -1,7 +1,9 @@
 package ie.coconnor.mobileappdev
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,8 +32,10 @@ fun CustomAppBar(
     onBackButtonClick: () -> Unit
 ) {
     TopAppBar(
+
         title = { Text(currentScreen) },
         modifier = modifier,
+
         navigationIcon = {
             if (showBackButton) {
                 // Show back navigation button if allowed
@@ -42,6 +46,7 @@ fun CustomAppBar(
                         contentDescription = stringResource(R.string.back_button)
                     )
                 }
+
             }
         }
     )
