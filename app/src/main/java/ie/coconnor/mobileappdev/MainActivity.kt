@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,17 +29,29 @@ import ie.coconnor.mobileappdev.ui.login.LoginScreen
 import ie.coconnor.mobileappdev.ui.login.SignUpScreen
 import ie.coconnor.mobileappdev.ui.navigation.BottomBar
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
+import ie.coconnor.mobileappdev.ui.screens.TestScreen
 import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
+import com.google.firebase.firestore.FirebaseFirestore
+import ie.coconnor.mobileappdev.models.AuthState
+import ie.coconnor.mobileappdev.ui.screens.SettingsScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     val authViewModel by viewModels<AuthViewModel>()
+//    cval db = FirebaseFirestore.getInstance()
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+//        window.setFlags(
+//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+//
+//        )
+        window.setTitle("Test")
         setContent {
             MobileAppDevTheme {
 //                Surface(
@@ -97,7 +111,13 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewModel) {
-    NavHost(navController, startDestination = Destinations.LoginScreen.route) {
+    var startDestination = Destinations.TestScreen.route
+
+    if (DataProvider.authState == AuthState.SignedOut)
+    {
+        startDestination = Destinations.LoginScreen.route
+    }
+    NavHost(navController, startDestination = startDestination) {
         composable(Destinations.LoginScreen.route) {
             LoginScreen( authViewModel)
         }
@@ -106,6 +126,12 @@ fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewMod
         }
         composable(Destinations.Notification.route) {
             //ArticlesScreen(navController)
+        }
+        composable(Destinations.TestScreen.route) {
+            TestScreen(navController)
+        }
+        composable(Destinations.SettingsScreen.route) {
+            SettingsScreen(navController, authViewModel)
         }
     }
 }

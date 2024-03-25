@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import ie.coconnor.mobileappdev.models.DataProvider
 
 @Composable
 fun BottomBar(
@@ -20,8 +21,8 @@ fun BottomBar(
     state: MutableState<Boolean>,
     modifier: Modifier = Modifier
 ) {
-    val screens = listOf(
-        Destinations.LoginScreen, Destinations.Favourite, Destinations.Notification
+    var screens = listOf(
+        Destinations.ExploreScreen, Destinations.Favourite, Destinations.Notification, Destinations.TestScreen, Destinations.SettingsScreen
     )
 
     NavigationBar(

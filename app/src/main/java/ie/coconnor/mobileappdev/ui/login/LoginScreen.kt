@@ -141,7 +141,6 @@ fun LoginScreen(
                     }
                     Button(
                         onClick = {
-                            // TODO: Sign in with Google
                             authViewModel.oneTapSignIn()
                         },
                         modifier = Modifier
@@ -181,7 +180,6 @@ fun LoginScreen(
                 }else{
                     Button(
                         onClick = {
-                            // TODO: Sign in with Google
                             authViewModel.signOut()
                         },
                         modifier = Modifier

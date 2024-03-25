@@ -35,6 +35,7 @@ import ie.coconnor.mobileappdev.R
 fun SignUpScreen(navController: NavHostController) {
 
     Scaffold(
+//        modifier = Modifier.fillMaxSize(),
         topBar = {
             CustomAppBar(
                 currentScreen = "TopAppBar",
@@ -42,8 +43,9 @@ fun SignUpScreen(navController: NavHostController) {
                 onBackButtonClick = {
                     navController.popBackStack()
                 }
-            )
-        }     ) { paddingValues ->
+                )
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
