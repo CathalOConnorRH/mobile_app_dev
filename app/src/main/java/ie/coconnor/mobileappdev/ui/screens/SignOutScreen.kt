@@ -1,4 +1,4 @@
-package ie.coconnor.mobileappdev.screens
+package ie.coconnor.mobileappdev.ui.screens
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import ie.coconnor.mobileappdev.CustomAppBar
 
 @Composable
-fun SettingsScreen() {
+fun SignOutScreen() {
     Scaffold(
         topBar = {
             CustomAppBar(

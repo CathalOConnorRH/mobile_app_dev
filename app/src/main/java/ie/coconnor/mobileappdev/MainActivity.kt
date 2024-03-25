@@ -8,29 +8,31 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import ie.coconnor.mobileappdev.models.AuthState
 import ie.coconnor.mobileappdev.models.DataProvider
-import ie.coconnor.mobileappdev.screens.ArticlesScreen
 import ie.coconnor.mobileappdev.ui.login.LoginScreen
 import ie.coconnor.mobileappdev.ui.login.SignUpScreen
+import ie.coconnor.mobileappdev.ui.navigation.BottomBar
+import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val authViewModel by viewModels<AuthViewModel>()
+    val authViewModel by viewModels<AuthViewModel>()
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,14 +40,16 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MobileAppDevTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                ) {
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = MaterialTheme.colorScheme.background,
+//                ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "LoginScreen") {
-                        composable("LoginScreen") { LoginScreen() }
-                        composable("SignUpScreen") { SignUpScreen(navController) }
+                    var buttonsVisible = remember { mutableStateOf(true) }
+
+//                    NavHost(navController = navController, startDestination = "LoginScreen") {
+//                        composable("LoginScreen") { LoginScreen() }
+//                        composable("SignUpScreen") { SignUpScreen(navController) }
 //                        composable(
 //                            route = "screen2/{name}",
 //                            arguments = listOf(navArgument("name") { type = NavType.StringType })
@@ -55,7 +59,7 @@ class MainActivity : ComponentActivity() {
 //                                name = backStackEntry.arguments?.getString("name") ?: ""
 //                            )
 //                        }
-                    }
+//                    }
                     val currentUser = authViewModel.currentUser.collectAsState().value
                     DataProvider.updateAuthState(currentUser)
 
@@ -63,15 +67,45 @@ class MainActivity : ComponentActivity() {
                     Log.i("AuthRepo", "Anonymous: ${DataProvider.isAnonymous}")
                     Log.i("AuthRepo", "User: ${DataProvider.user}")
 
-                    if (DataProvider.authState != AuthState.SignedOut) {
-                        ArticlesScreen(authViewModel)
-                    } else {
-                        LoginScreen(authViewModel)
-                    }
+//                    if (DataProvider.authState != AuthState.SignedOut) {
+//                        ArticlesScreen(authViewModel)
+//                    } else {
+//                        LoginScreen(authViewModel)
+//                    }
 //                    LoginScreen()
+
+                    Scaffold(
+                        bottomBar = {
+                            BottomBar(
+                                navController = navController,
+                                state = buttonsVisible,
+                                modifier = Modifier
+                            )
+                        }) { paddingValues ->
+                        Box(
+                            modifier = Modifier.padding(paddingValues)
+                        ) {
+                            NavigationGraph(navController = navController, authViewModel = authViewModel)
+                        }
+                    }
                 }
 
             }
+        }
+    }
+//}
+
+@Composable
+fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewModel) {
+    NavHost(navController, startDestination = Destinations.LoginScreen.route) {
+        composable(Destinations.LoginScreen.route) {
+            LoginScreen( authViewModel)
+        }
+        composable(Destinations.Favourite.route) {
+            SignUpScreen(navController)
+        }
+        composable(Destinations.Notification.route) {
+            //ArticlesScreen(navController)
         }
     }
 }

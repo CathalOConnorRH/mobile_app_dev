@@ -1,4 +1,4 @@
-package ie.coconnor.mobileappdev.screens
+package ie.coconnor.mobileappdev.ui.screens
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import ie.coconnor.mobileappdev.CustomAppBar
 
 @Composable
-fun SignOutScreen() {
+fun NewsScreen() {
     Scaffold(
         topBar = {
             CustomAppBar(
@@ -21,15 +21,16 @@ fun SignOutScreen() {
                 showBackButton = true,
                 onBackButtonClick = {  }
             )
-        }     ) { paddingValues ->
+        }    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = " Settings Screen")
+            Text(text = "News Screen")
         }
     }
+
 }

@@ -173,7 +173,7 @@ fun LoginScreenOld(navController: NavHostController) {
 }
 @Preview
 @Composable
-fun LoginScreenPreview(){
+fun LoginScreenPreviewOld(){
     val navController = rememberNavController()
     LoginScreenOld(navController)
 }
