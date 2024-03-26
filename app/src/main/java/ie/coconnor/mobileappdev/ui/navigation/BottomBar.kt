@@ -22,7 +22,7 @@ fun BottomBar(
     modifier: Modifier = Modifier
 ) {
     var screens = listOf(
-        Destinations.ExploreScreen, Destinations.Favourite, Destinations.Notification, Destinations.TestScreen, Destinations.SettingsScreen
+        Destinations.TourScreen, Destinations.Favourite, Destinations.Notification, Destinations.TestScreen, Destinations.SettingsScreen
     )
 
     NavigationBar(

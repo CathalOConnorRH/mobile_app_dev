@@ -101,7 +101,7 @@ fun LoginScreen(
 //                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.tertiary)
                 )
 
-                if (DataProvider.authState == AuthState.SignedOut) {
+                if (DataProvider.authState == AuthState.SignedOut || DataProvider.isAnonymous) {
 
                     Row(
                         modifier = Modifier
@@ -133,7 +133,7 @@ fun LoginScreen(
                     ) {
                         ElevatedButton(
                             onClick = {
-                                /* Do something! */
+
                             }
                         ) {
                             Text(text = "Create Account")

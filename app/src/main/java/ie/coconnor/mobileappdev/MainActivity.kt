@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.android.datatransport.runtime.BuildConfig
 import dagger.hilt.android.AndroidEntryPoint
 import ie.coconnor.mobileappdev.models.DataProvider
 import ie.coconnor.mobileappdev.ui.login.LoginScreen
@@ -31,16 +32,22 @@ import ie.coconnor.mobileappdev.ui.navigation.BottomBar
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.ui.screens.TestScreen
 import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
-import com.google.firebase.firestore.FirebaseFirestore
+//import com.google.firebase.firestore.FirebaseFirestore
 import ie.coconnor.mobileappdev.models.AuthState
+import ie.coconnor.mobileappdev.models.Constants
+import ie.coconnor.mobileappdev.models.Constants.tripAdvisorApiKey
+import ie.coconnor.mobileappdev.models.tour.TourViewModel
+import ie.coconnor.mobileappdev.ui.screens.Attraction
 import ie.coconnor.mobileappdev.ui.screens.SettingsScreen
+import ie.coconnor.mobileappdev.ui.screens.TourScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     val authViewModel by viewModels<AuthViewModel>()
-//    cval db = FirebaseFirestore.getInstance()
+    val tourViewModel by viewModels<TourViewModel>()
 
+//    cval db = FirebaseFirestore.getInstance()
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +106,7 @@ class MainActivity : ComponentActivity() {
                         Box(
                             modifier = Modifier.padding(paddingValues)
                         ) {
-                            NavigationGraph(navController = navController, authViewModel = authViewModel)
+                            NavigationGraph(navController = navController, authViewModel = authViewModel, tourViewModel = tourViewModel)
                         }
                     }
                 }
@@ -110,7 +117,7 @@ class MainActivity : ComponentActivity() {
 //}
 
 @Composable
-fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewModel) {
+fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewModel, tourViewModel: TourViewModel) {
     var startDestination = Destinations.TestScreen.route
 
     if (DataProvider.authState == AuthState.SignedOut)
@@ -124,6 +131,9 @@ fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewMod
         composable(Destinations.Favourite.route) {
             SignUpScreen(navController)
         }
+        composable(Destinations.TourScreen.route) {
+            TourScreen(tourViewModel)
+        }
         composable(Destinations.Notification.route) {
             //ArticlesScreen(navController)
         }
@@ -131,7 +141,9 @@ fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewMod
             TestScreen(navController)
         }
         composable(Destinations.SettingsScreen.route) {
+//            SettingsScreen(navController, authViewModel)
             SettingsScreen(navController, authViewModel)
+
         }
     }
 }

@@ -19,9 +19,14 @@ sealed class Destinations(
         icon = Icons.Outlined.Home
     )
 
-    object ExploreScreen : Destinations(
-        route = "ExploreScreen",
-        title = "Explore",
+//    object ExploreScreen : Destinations(
+//        route = "ExploreScreen",
+//        title = "Explore",
+//        icon = Icons.Outlined.Home
+//    )
+    object TourScreen : Destinations(
+        route = "TourScreen",
+        title = "Tours",
         icon = Icons.Outlined.Home
     )
 

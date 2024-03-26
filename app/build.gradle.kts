@@ -1,9 +1,13 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("com.google.gms.google-services")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+//    id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+
 }
 
 android {
@@ -21,6 +25,24 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+//        val properties = Properties()
+//        val apiKey: String
+//
+//        val localPropertiesFile = project.rootProject.file("apkikeys.properties")
+//        apiKey = if (localPropertiesFile.exists()) {
+//            properties.load(localPropertiesFile.inputStream())
+//            properties.getProperty("TRIPADVISOR_API_KEY") ?: ""
+//        } else {
+//            System.getenv("TRIPADVISOR_API_KEY") ?: ""
+//        }
+//
+//        buildConfigField(
+//            "String",
+//            "TRIPADVISOR_API_KEY",
+//            "\"$apiKey\""
+//        )
+
     }
 
     buildTypes {
@@ -58,11 +80,11 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.transportation.consumer)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.material3.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -84,5 +106,11 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.51")
     kapt("com.google.dagger:hilt-android-compiler:2.51")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+
+    // Retrofit for network requests
+    implementation ("com.squareup.retrofit2:retrofit:2.10.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.10.0")
+
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.3")
 
 }
