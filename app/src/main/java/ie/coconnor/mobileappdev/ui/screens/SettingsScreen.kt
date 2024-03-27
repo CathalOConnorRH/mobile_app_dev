@@ -1,19 +1,15 @@
 package ie.coconnor.mobileappdev.ui.screens
 
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.MaterialTheme
 import android.annotation.SuppressLint
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Row
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,18 +27,15 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,19 +44,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ie.coconnor.mobileappdev.AuthViewModel
-import ie.coconnor.mobileappdev.CustomAppBar
 import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.DataProvider
-import ie.coconnor.mobileappdev.ui.login.SignUpScreen
-import androidx.activity.viewModels
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
+import ie.coconnor.mobileappdev.utils.SharedPref
+import ie.coconnor.mobileappdev.utils.UIThemeController
+import ie.coconnor.mobileappdev.utils.UIThemeController.updateUITheme
+import javax.inject.Inject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewModel) {
 //fun SettingsScreen() {
-    var darkMode by remember { mutableStateOf(true) }
-
+//    var darkMode by remember { mutableStateOf(true) }
     Scaffold(
     ) //{ //paddingValues ->
     {
@@ -194,8 +187,20 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Light
                 )
-                SwitchWithIconExample(
 
+                val isDarkMode by UIThemeController.isDarkMode.collectAsState()
+                Switch(
+                    checked = isDarkMode,
+                    onCheckedChange = {
+                        if (it) {
+                            println("The switch is checked.")
+                            UIThemeController.updateUITheme(true)
+                        } else {
+                            println("The switch is unchecked.")
+                            UIThemeController.updateUITheme(false)
+                        }
+//                        var checked = it
+                    },
                 )
             }
             Row(
@@ -232,9 +237,9 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Light
                         )
-                        SwitchWithIconExample(
+                        SwitchWithIconExample {
 
-                        )
+                        }
                     }
                     Row(
                         modifier = Modifier,
@@ -249,9 +254,9 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Light
                         )
-                        SwitchWithIconExample(
+                        SwitchWithIconExample {
 
-                        )
+                        }
                     }
                 }
             }
@@ -289,9 +294,8 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Light
                         )
-                        SwitchWithIconExample(
-
-                        )
+                        SwitchWithIconExample {
+                        }
                     }
                     Row(
                         modifier = Modifier,
@@ -306,9 +310,8 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Light
                         )
-                        SwitchWithIconExample(
-
-                        )
+                        SwitchWithIconExample {
+                        }
                     }
                 }
             }
@@ -405,7 +408,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
 //            }
 
 @Composable
-fun SwitchWithIconExample() {
+fun SwitchWithIconExample(onCheckedChange: () -> Unit) {
     var checked by remember { mutableStateOf(false) }
 
     Switch(
@@ -433,5 +436,19 @@ fun SettingScreenPreview() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
     SettingsScreen(navController, authViewModel)
+}
+
+@Composable
+fun ThemeSwitcher (darkTheme : Boolean, onThemeChanged: () -> Unit){
+    Switch(
+        checked = darkTheme,
+        onCheckedChange = {onThemeChanged()} ,
+        colors = SwitchDefaults.colors(
+            checkedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+            checkedThumbColor = MaterialTheme.colorScheme.primary,
+            uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+            uncheckedThumbColor = MaterialTheme.colorScheme.secondary
+        )
+    )
 }
 

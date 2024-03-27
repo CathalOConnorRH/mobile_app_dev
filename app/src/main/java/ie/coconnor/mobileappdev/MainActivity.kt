@@ -8,14 +8,17 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
@@ -40,9 +43,18 @@ import ie.coconnor.mobileappdev.models.tour.TourViewModel
 import ie.coconnor.mobileappdev.ui.screens.Attraction
 import ie.coconnor.mobileappdev.ui.screens.SettingsScreen
 import ie.coconnor.mobileappdev.ui.screens.TourScreen
+import ie.coconnor.mobileappdev.utils.SharedPref
+import ie.coconnor.mobileappdev.utils.UIThemeController
+import kotlinx.coroutines.Job
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var sharedPref: SharedPref
+//    private var pressBackExitJob: Job? = null
+//    private var backPressedOnce = false
 
     val authViewModel by viewModels<AuthViewModel>()
     val tourViewModel by viewModels<TourViewModel>()
@@ -59,28 +71,28 @@ class MainActivity : ComponentActivity() {
 //
 //        )
         window.setTitle("Test")
+        UIThemeController.updateUITheme(sharedPref.getDarkMode())
+
         setContent {
-            MobileAppDevTheme {
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background,
-//                ) {
+            val isDarkMode by UIThemeController.isDarkMode.collectAsState()
+
+            MobileAppDevTheme (darkTheme = isDarkMode){
                     val navController = rememberNavController()
                     var buttonsVisible = remember { mutableStateOf(true) }
 
-//                    NavHost(navController = navController, startDestination = "LoginScreen") {
-//                        composable("LoginScreen") { LoginScreen() }
-//                        composable("SignUpScreen") { SignUpScreen(navController) }
-//                        composable(
-//                            route = "screen2/{name}",
-//                            arguments = listOf(navArgument("name") { type = NavType.StringType })
-//                        ) { backStackEntry ->
-//                            Screen2(
-//                                navController,
-//                                name = backStackEntry.arguments?.getString("name") ?: ""
-//                            )
-//                        }
-//                    }
+    //                    NavHost(navController = navController, startDestination = "LoginScreen") {
+    //                        composable("LoginScreen") { LoginScreen() }
+    //                        composable("SignUpScreen") { SignUpScreen(navController) }
+    //                        composable(
+    //                            route = "screen2/{name}",
+    //                            arguments = listOf(navArgument("name") { type = NavType.StringType })
+    //                        ) { backStackEntry ->
+    //                            Screen2(
+    //                                navController,
+    //                                name = backStackEntry.arguments?.getString("name") ?: ""
+    //                            )
+    //                        }
+    //                    }
                     val currentUser = authViewModel.currentUser.collectAsState().value
                     DataProvider.updateAuthState(currentUser)
 
@@ -88,12 +100,12 @@ class MainActivity : ComponentActivity() {
                     Log.i("AuthRepo", "Anonymous: ${DataProvider.isAnonymous}")
                     Log.i("AuthRepo", "User: ${DataProvider.user}")
 
-//                    if (DataProvider.authState != AuthState.SignedOut) {
-//                        ArticlesScreen(authViewModel)
-//                    } else {
-//                        LoginScreen(authViewModel)
-//                    }
-//                    LoginScreen()
+    //                    if (DataProvider.authState != AuthState.SignedOut) {
+    //                        ArticlesScreen(authViewModel)
+    //                    } else {
+    //                        LoginScreen(authViewModel)
+    //                    }
+    //                    LoginScreen()
 
                     Scaffold(
                         bottomBar = {
@@ -113,8 +125,7 @@ class MainActivity : ComponentActivity() {
 
             }
         }
-    }
-//}
+}
 
 @Composable
 fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewModel, tourViewModel: TourViewModel) {
