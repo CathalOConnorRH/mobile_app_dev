@@ -15,9 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import ie.coconnor.mobileappdev.CustomAppBar
 import ie.coconnor.mobileappdev.models.Constants.db
-import ie.coconnor.mobileappdev.ui.navigation.Destinations
+import ie.coconnor.mobileappdev.Attraction
+import ie.coconnor.mobileappdev.Attractions
 
 @Composable
 fun TestScreen(navController: NavHostController) {
@@ -47,12 +47,47 @@ fun TestScreen(navController: NavHostController) {
 //                            color = MaterialTheme.colorScheme.primary
                 )
             }
+            Button(
+                onClick = {
+                    readTours()
+                },
+                modifier = Modifier
+                    .size(width = 200.dp, height = 50.dp)
+                    .padding(horizontal = 16.dp),
+            ) {
+                Text(
+                    text = "Read Tours",
+                    modifier = Modifier.padding(6.dp),
+//                            color = MaterialTheme.colorScheme.primary
+                )
+            }
 
-            val attraction = Attraction("Reginald's Tower")
+            val attraction = Attraction(
+                "Reginald's Tower",
+                "52.2604982",
+                "-7.1079954",
+                "Circular 13th-century waterside defence tower with a large collection of archaeological artefacts.",
+                "testUrl"
+                )
+
+            val attraction2 = Attraction(
+                "Reginald's Tower2",
+                "52.2604982",
+                "-7.1079954",
+                "Circular 13th-century waterside defence tower with a large collection of archaeological artefacts.",
+                "testUrl"
+            )
+
+            val attractionsList = mutableListOf(attraction, attraction2)
+            val attractions = Attractions(
+                "Waterford",
+                attractionsList,
+                "com.google.firebase.auth.internal.zzaf@dfb7120"
+            )
 
             Button(
                 onClick = {
-                    createAttractions(attraction)
+                    createAttractions(attractions)
                 },
                 modifier = Modifier
                     .size(width = 200.dp, height = 50.dp)
@@ -81,6 +116,10 @@ fun TestScreen(navController: NavHostController) {
             }
         }
     }
+}
+
+fun readTours() {
+    TODO("Not yet implemented")
 }
 
 fun getAttraction(attraction: Attraction) {
@@ -119,7 +158,7 @@ fun deleteAttraction(attraction: Attraction) {
         }
 }
 
-fun createAttractions(attraction: Attraction) {
+fun createAttractions(attraction: Attractions) {
     var attractionName = attraction.name.filter { it.isLetterOrDigit() }
     db.collection("attractions")
         .document(attractionName)
@@ -147,7 +186,3 @@ fun readAttractions() {
             Log.d("TAG", "Error getting documents: ", exception)
         }
 }
-
-data class Attraction(
-    val name: String = ""
-)

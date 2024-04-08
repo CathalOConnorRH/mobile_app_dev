@@ -1,5 +1,8 @@
 package ie.coconnor.mobileappdev.models.tour
 
-data class Tour (
-    val location_id: String
+import androidx.compose.ui.Modifier
+
+data class Tour(
+    val location_id: String,
+    val modifier: Modifier
 )

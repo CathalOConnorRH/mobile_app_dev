@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Sound Safari</string>
     <string name="web_client_id">990155226845-cko0rpch0i60gf2eolejnrrac29nncum.apps.googleusercontent.com</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">API_KEY</string>
     <string name="screen_1">Screen 1</string>
     <string name="screen_2">Screen 2</string>
     <string name="screen_3">Screen 3</string>
     <string name="back_button">Back</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

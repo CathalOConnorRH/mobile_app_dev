@@ -2,6 +2,7 @@ package ie.coconnor.mobileappdev.ui.screens
 
 import androidx.compose.material3.MaterialTheme
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -46,11 +48,13 @@ import androidx.navigation.compose.rememberNavController
 import ie.coconnor.mobileappdev.AuthViewModel
 import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.DataProvider
+import ie.coconnor.mobileappdev.service.LocationForegroundService
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.utils.SharedPref
 import ie.coconnor.mobileappdev.utils.UIThemeController
 import ie.coconnor.mobileappdev.utils.UIThemeController.updateUITheme
 import javax.inject.Inject
+
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -189,12 +193,14 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                 )
 
                 val isDarkMode by UIThemeController.isDarkMode.collectAsState()
+
                 Switch(
                     checked = isDarkMode,
                     onCheckedChange = {
                         if (it) {
                             println("The switch is checked.")
                             UIThemeController.updateUITheme(true)
+
                         } else {
                             println("The switch is unchecked.")
                             UIThemeController.updateUITheme(false)
@@ -231,15 +237,25 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                         Spacer(modifier = Modifier.width(28.dp))
 
                         Text(
-                            text = "Some Permission",
+                            text = "Allow Location Service",
                             modifier = Modifier
                                 .padding(10.dp),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Light
                         )
-                        SwitchWithIconExample {
 
-                        }
+                        val foregroundServiceIsRunning = true
+                        Switch(
+                            checked = foregroundServiceIsRunning,
+                            onCheckedChange = {
+                                if (it) {
+                                    println("The switch is checked.")
+                                } else {
+                                    println("The switch is unchecked.")
+                                }
+//                        var checked = it
+                            },
+                        )
                     }
                     Row(
                         modifier = Modifier,
@@ -288,7 +304,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                         Spacer(modifier = Modifier.width(28.dp))
 
                         Text(
-                            text = "Some Permission",
+                            text = "Auto Play",
                             modifier = Modifier
                                 .padding(10.dp),
                             fontSize = 20.sp,
@@ -304,7 +320,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                         Spacer(modifier = Modifier.width(28.dp))
 
                         Text(
-                            text = "Some Permission",
+                            text = "Text to Speech langauge",
                             modifier = Modifier
                                 .padding(10.dp),
                             fontSize = 20.sp,
@@ -353,10 +369,10 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
                             shape = RoundedCornerShape(10.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-
-                                )
+//                                colors = ButtonDefaults.buttonColors(
+//                                    containerColor = Color.White,
+//
+//                                )
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_google_logo),
@@ -367,7 +383,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                                 text = "Sign Out",
                                 modifier = Modifier.padding(6.dp),
 //                                color = Color.Black.copy(alpha = 0.5f)
-                                color = Color.Black.copy()
+                                color = MaterialTheme.colorScheme.onBackground
                             )
                             }
                         }
@@ -452,3 +468,32 @@ fun ThemeSwitcher (darkTheme : Boolean, onThemeChanged: () -> Unit){
     )
 }
 
+//@Preview
+//@Composable
+//fun ThemeRadioButtons() {
+//    val selectedOption = remember { mutableStateOf("System Default") }
+//    val isDarkMode by UIThemeController.isDarkMode.collectAsState()
+//
+//    Column {
+//        RadioButton(
+//            selected = selectedOption.value == "System Default",
+//            onClick = {
+//                selectedOption.value = "Option1"
+//                UIThemeController.updateUITheme(true)
+//            }
+//        )
+//        Text("System Default")
+//
+//        RadioButton(
+//            selected = selectedOption.value == "Dark Mode",
+//            onClick = { selectedOption.value = "Option2" }
+//        )
+//        Text("Dark Mode")
+//
+//        RadioButton(
+//            selected = selectedOption.value == "Light Mode",
+//            onClick = { selectedOption.value = "Option2" }
+//        )
+//        Text("Light mode")
+//    }
+//}

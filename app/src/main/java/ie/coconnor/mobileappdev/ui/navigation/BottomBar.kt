@@ -22,12 +22,12 @@ fun BottomBar(
     modifier: Modifier = Modifier
 ) {
     var screens = listOf(
-        Destinations.TourScreen, Destinations.Favourite, Destinations.Notification, Destinations.TestScreen, Destinations.SettingsScreen
+        Destinations.TourScreen, Destinations.Favourite, Destinations.AboutScreen, Destinations.TestScreen, Destinations.SettingsScreen
     )
 
     NavigationBar(
         modifier = modifier,
-        containerColor = Color.LightGray,
+//        containerColor = Color.LightGray,
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -51,9 +51,9 @@ fun BottomBar(
                         restoreState = true
                     }
                 },
-                colors = NavigationBarItemDefaults.colors(
-                    unselectedTextColor = Color.Gray, selectedTextColor = Color.White
-                ),
+//                colors = NavigationBarItemDefaults.colors(
+//                    unselectedTextColor = Color.Black, selectedTextColor = Color.White
+//                ),
             )
         }
     }

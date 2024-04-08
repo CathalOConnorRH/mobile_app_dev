@@ -90,17 +90,26 @@ fun LoginScreen(
                 Arrangement.spacedBy(8.dp),
                 Alignment.CenterHorizontally
             ) {
+//                Image(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(16.dp)
+//                        .weight(1f),
+//                    painter = painterResource(R.drawable.vector),
+//                    contentDescription = "app_logo",
+//                    contentScale = ContentScale.Fit,
+////                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.tertiary)
+//                )
+                val drawableResource = R.drawable.vector//if (dar) R.drawable.xxx else R.drawable.xxx
+
                 Image(
+                    painter = painterResource(id = drawableResource),
+                    contentDescription = "Logo",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .weight(1f),
-                    painter = painterResource(R.drawable.vector),
-                    contentDescription = "app_logo",
-                    contentScale = ContentScale.Fit,
-//                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.tertiary)
+                        .weight(1f)
                 )
-
                 if (DataProvider.authState == AuthState.SignedOut || DataProvider.isAnonymous) {
 
                     Row(

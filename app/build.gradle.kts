@@ -6,8 +6,8 @@ plugins {
     id("com.google.gms.google-services")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    alias(libs.plugins.googleAndroidLibrariesMapsplatformSecretsGradlePlugin)
 //    id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-
 }
 
 android {
@@ -25,24 +25,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-//        val properties = Properties()
-//        val apiKey: String
-//
-//        val localPropertiesFile = project.rootProject.file("apkikeys.properties")
-//        apiKey = if (localPropertiesFile.exists()) {
-//            properties.load(localPropertiesFile.inputStream())
-//            properties.getProperty("TRIPADVISOR_API_KEY") ?: ""
-//        } else {
-//            System.getenv("TRIPADVISOR_API_KEY") ?: ""
-//        }
-//
-//        buildConfigField(
-//            "String",
-//            "TRIPADVISOR_API_KEY",
-//            "\"$apiKey\""
-//        )
-
     }
 
     buildTypes {
@@ -60,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -85,6 +68,9 @@ dependencies {
     implementation(libs.transportation.consumer)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.accompanist.permissions)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -112,5 +98,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.10.0")
 
     implementation ("androidx.compose.runtime:runtime-livedata:1.6.3")
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 
 }

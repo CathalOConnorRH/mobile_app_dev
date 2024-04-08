@@ -5,6 +5,7 @@ import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -26,20 +27,20 @@ sealed class Destinations(
 //    )
     object TourScreen : Destinations(
         route = "TourScreen",
-        title = "Tours",
+        title = "Explore",
         icon = Icons.Outlined.Home
     )
 
     object Favourite : Destinations(
         route = "favourite_screen",
-        title = "Favorite",
-        icon = Icons.Outlined.Favorite
+        title = "Search",
+        icon = Icons.Outlined.Search
     )
 
-    object Notification : Destinations(
-        route = "notification_screen",
+    object AboutScreen : Destinations(
+        route = "AboutScreen",
         title = "Plan",
-        icon = Icons.Outlined.Notifications
+        icon = Icons.Outlined.Favorite
     )
 
     object TestScreen : Destinations(
