@@ -2,6 +2,8 @@ package ie.coconnor.mobileappdev.service
 
 import ie.coconnor.mobileappdev.models.LocationResponse
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.Query
 
 interface ApiService {
@@ -9,6 +11,7 @@ interface ApiService {
 //    fun getPostById(@Path("location_id") postId: Int): Call<TripadvisorJson>
 
     @GET("location/search")
+    @Headers("Referer: http://coconnor.ie")
     suspend fun getLocations(@Query("key") apiKey: String,
                      @Query("searchQuery") searchQuery: String,
                      @Query("category") category: String): LocationResponse

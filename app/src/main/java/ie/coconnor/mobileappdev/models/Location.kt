@@ -12,15 +12,15 @@ data class LocationDetailsResponse(
 )
 
 data class Location(
-    val location_id: String,
-    val name: String,
-    val address_obj: Address
+    var location_id: String,
+    var name: String,
+    var address_obj: Address? = null
 )
 
 data class Address(
     val street1: String? = null,
     val street2: String? = null,
-    val city: String,
+    var city: String,
     val state: String,
     val country: String,
     val postalcode: String? = null,
