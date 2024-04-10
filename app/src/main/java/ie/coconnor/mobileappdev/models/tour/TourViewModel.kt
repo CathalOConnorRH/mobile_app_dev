@@ -18,7 +18,7 @@ class TourViewModel : ViewModel() {
 
 
 
-    val apiKey: String = "4D3285AB3EBE47F681153DDBA4B25B7A"
+    val apiKey: String = ""
     val location: String = "Waterford, Ireland"
     val category: String = "attractions"
 
