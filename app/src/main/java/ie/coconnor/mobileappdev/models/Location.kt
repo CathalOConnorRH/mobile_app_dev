@@ -1,5 +1,6 @@
 package ie.coconnor.mobileappdev.models
 
+import android.media.Image
 import com.google.gson.annotations.SerializedName
 
 data class LocationResponse(
@@ -8,13 +9,15 @@ data class LocationResponse(
 )
 
 data class LocationDetailsResponse(
+    @SerializedName("location")
     val location: LocationDetails
 )
 
 data class Location(
     var location_id: String,
     var name: String,
-    var address_obj: Address? = null
+    var address_obj: Address? = null,
+    var image: Image? = null
 )
 
 data class Address(

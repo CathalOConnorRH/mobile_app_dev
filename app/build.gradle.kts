@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId = "ie.coconnor.mobileappdev"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.database.ktx)
     implementation(libs.accompanist.permissions)
+    implementation(libs.androidx.compose.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -101,4 +102,6 @@ dependencies {
     implementation ("com.google.android.gms:play-services-maps:18.1.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
 
+    implementation ("com.squareup.moshi:moshi:1.14.0")
+    implementation ("com.squareup.moshi:moshi-kotlin:1.14.0")
 }

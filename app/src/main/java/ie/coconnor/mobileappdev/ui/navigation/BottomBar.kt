@@ -22,7 +22,7 @@ fun BottomBar(
     modifier: Modifier = Modifier
 ) {
     var screens = listOf(
-        Destinations.TourScreen, Destinations.Favourite, Destinations.AboutScreen, Destinations.TestScreen, Destinations.SettingsScreen
+        Destinations.LocationsScreen, Destinations.Favourite, Destinations.AboutScreen, Destinations.TestScreen, Destinations.SettingsScreen
     )
 
     NavigationBar(
@@ -46,9 +46,8 @@ fun BottomBar(
                     navController.navigate(screen.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
+                            inclusive = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 },
 //                colors = NavigationBarItemDefaults.colors(

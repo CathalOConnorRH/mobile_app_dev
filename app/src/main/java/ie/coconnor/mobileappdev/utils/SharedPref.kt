@@ -10,7 +10,10 @@ class SharedPref @Inject constructor(
 ) {
 
     companion object {
+
         private const val PREF_DARK_MODE = "dark_mode"
+        private const val LOCATION_ID = ""
+
     }
 
     private val context: Context = context.applicationContext
@@ -42,5 +45,18 @@ class SharedPref @Inject constructor(
 
     fun getDarkMode(): Boolean {
         return getSharedPerf().getBoolean(PREF_DARK_MODE, false)
+    }
+
+    fun setLocationId(location_id: String) {
+        getSharedPerf()
+            .edit()
+            .apply {
+                putString(LOCATION_ID, location_id)
+                apply()
+            }
+    }
+
+    fun getLocationId(): String {
+        return getSharedPerf().getString(LOCATION_ID, "").toString()
     }
 }

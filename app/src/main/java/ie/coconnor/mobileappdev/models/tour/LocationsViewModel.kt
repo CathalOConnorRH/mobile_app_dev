@@ -5,31 +5,31 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import ie.coconnor.mobileappdev.models.Constants.tripAdvisorApiKey
+import ie.coconnor.mobileappdev.models.Location
 import ie.coconnor.mobileappdev.models.LocationResponse
-import ie.coconnor.mobileappdev.repository.TourRepository
+import ie.coconnor.mobileappdev.repository.LocationsRepository
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+class LocationsViewModel() : ViewModel() {
 
-class TourViewModel : ViewModel() {
-    private val repository = TourRepository()
+    private val repository = LocationsRepository()
 
-    private val _tours = MutableLiveData<LocationResponse>()
-    val tours: LiveData<LocationResponse> = _tours
+    private val _locations = MutableLiveData<LocationResponse>()
+    val locations: LiveData<LocationResponse> = _locations
 
-
-
-    val apiKey: String = "4D3285AB3EBE47F681153DDBA4B25B7A"
     val location: String = "Waterford, Ireland"
     val category: String = "attractions"
 
     fun fetchTours() {
         viewModelScope.launch {
             try {
-                val te = null
-                val cards = repository.getLocations(apiKey, location, category)
+                val cards = repository.getLocations(tripAdvisorApiKey, location, category)
                 println(cards.data.toString())
-                _tours.value = cards
-                Log.e("TourViewModel", _tours.value.toString())
+                _locations.value = cards
+                Log.e("TourViewModel", _locations.value.toString())
             } catch (e: Exception) {
                 // Handle error
                 Log.e("TourViewModel", e.message.toString());

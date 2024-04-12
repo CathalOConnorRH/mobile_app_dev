@@ -22,16 +22,11 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -63,21 +58,19 @@ import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
 //import com.google.firebase.firestore.FirebaseFirestore
 import ie.coconnor.mobileappdev.models.AuthState
 import ie.coconnor.mobileappdev.models.Constants.BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE
-import ie.coconnor.mobileappdev.models.Constants.CUSTOM_INTENT_GEOFENCE
 import ie.coconnor.mobileappdev.models.Constants.LOCATION_PERMISSION_REQUEST_CODE
-import ie.coconnor.mobileappdev.models.tour.TourViewModel
+import ie.coconnor.mobileappdev.models.tour.LocationDetailsViewModel
+import ie.coconnor.mobileappdev.models.tour.LocationsViewModel
 import ie.coconnor.mobileappdev.receiver.GeofenceBroadcastReceiver
 import ie.coconnor.mobileappdev.service.BootReceiver
 import ie.coconnor.mobileappdev.service.LocationForegroundService
 import ie.coconnor.mobileappdev.ui.screens.AboutScreen
+import ie.coconnor.mobileappdev.ui.screens.Locations.LocationDetailsScreen
 import ie.coconnor.mobileappdev.ui.screens.SettingsScreen
-import ie.coconnor.mobileappdev.ui.screens.TourScreen
+import ie.coconnor.mobileappdev.ui.screens.Locations.LocationsScreen
 import ie.coconnor.mobileappdev.utils.SharedPref
 import ie.coconnor.mobileappdev.utils.UIThemeController
 import ie.coconnor.mobileappdev.utils.UIThemeController.updateUITheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -87,7 +80,8 @@ class MainActivity : ComponentActivity() {
     lateinit var sharedPref: SharedPref
 
     val authViewModel by viewModels<AuthViewModel>()
-    val tourViewModel by viewModels<TourViewModel>()
+    val tourViewModel by viewModels<LocationsViewModel>()
+    val locationDetailsViewModel by viewModels<LocationDetailsViewModel> ()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var geofencingClient: GeofencingClient
@@ -194,7 +188,7 @@ class MainActivity : ComponentActivity() {
                         Box(
                             modifier = Modifier.padding(paddingValues)
                         ) {
-                            NavigationGraph(navController = navController, authViewModel = authViewModel, tourViewModel = tourViewModel)
+                            NavigationGraph(navController = navController, authViewModel = authViewModel, tourViewModel = tourViewModel, locationDetailsViewModel = locationDetailsViewModel, sharedPref = sharedPref)
                         }
                     }
                 }
@@ -412,8 +406,12 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewModel, tourViewModel: TourViewModel) {
-    var startDestination = Destinations.TestScreen.route
+fun NavigationGraph(navController: NavHostController,
+                    authViewModel: AuthViewModel,
+                    tourViewModel: LocationsViewModel,
+                    locationDetailsViewModel: LocationDetailsViewModel,
+                    sharedPref: SharedPref) {
+    var startDestination = Destinations.LocationsScreen.route
 
     if (DataProvider.authState == AuthState.SignedOut)
     {
@@ -426,8 +424,8 @@ fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewMod
         composable(Destinations.Favourite.route) {
             SignUpScreen(navController)
         }
-        composable(Destinations.TourScreen.route) {
-            TourScreen(tourViewModel)
+        composable(Destinations.LocationsScreen.route) {
+            LocationsScreen(tourViewModel, navController , sharedPref)
         }
         composable(Destinations.AboutScreen.route) {
             AboutScreen()
@@ -438,7 +436,9 @@ fun NavigationGraph(navController: NavHostController, authViewModel: AuthViewMod
         composable(Destinations.SettingsScreen.route) {
 //            SettingsScreen(navController, authViewModel)
             SettingsScreen(navController, authViewModel)
-
+        }
+        composable(Destinations.LocationDetailsScreen.route) {
+            LocationDetailsScreen(navController, locationDetailsViewModel,sharedPref)
         }
     }
 }

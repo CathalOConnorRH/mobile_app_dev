@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -12,7 +11,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class Destinations(
     val route: String,
     val title: String? = null,
-    val icon: ImageVector? = null
+    val icon: ImageVector? = null,
 ) {
     object LoginScreen : Destinations(
         route = "LoginScreen",
@@ -20,14 +19,15 @@ sealed class Destinations(
         icon = Icons.Outlined.Home
     )
 
-//    object ExploreScreen : Destinations(
-//        route = "ExploreScreen",
-//        title = "Explore",
-//        icon = Icons.Outlined.Home
-//    )
-    object TourScreen : Destinations(
-        route = "TourScreen",
+    object LocationsScreen : Destinations(
+        route = "LocationsScreen",
         title = "Explore",
+        icon = Icons.Outlined.Home
+    )
+
+    object LocationDetailsScreen : Destinations(
+        route = "LocationDetailsScreen",
+        title = "LocationsDetails",
         icon = Icons.Outlined.Home
     )
 
