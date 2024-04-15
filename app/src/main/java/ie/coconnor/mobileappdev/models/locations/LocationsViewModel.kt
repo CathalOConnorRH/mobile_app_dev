@@ -18,12 +18,13 @@ class LocationsViewModel() : ViewModel() {
     val locations: LiveData<LocationResponse> = _locations
 
 
-    val location: String = "Brno, Chechia"
+//    val location: String = "Brno, Chechia"
     val category: String = "attractions"
 
-    fun fetchTours() {
+    fun fetchTours(location: String) {
         viewModelScope.launch {
             try {
+                println("Here =" + location)
                 val cards = repository.getLocations(tripAdvisorApiKey, location, category)
                 println(cards.data.toString())
                 _locations.value = cards
