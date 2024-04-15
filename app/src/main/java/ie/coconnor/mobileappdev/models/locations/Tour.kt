@@ -1,4 +1,4 @@
-package ie.coconnor.mobileappdev.models.tour
+package ie.coconnor.mobileappdev.models.locations
 
 import androidx.compose.ui.Modifier
 

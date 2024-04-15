@@ -1,18 +1,16 @@
-package ie.coconnor.mobileappdev.models.tour
+package ie.coconnor.mobileappdev.models.locations
 
+import android.content.res.Resources
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import ie.coconnor.mobileappdev.models.Constants.tripAdvisorApiKey
-import ie.coconnor.mobileappdev.models.Location
+import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.LocationDetails
 import ie.coconnor.mobileappdev.repository.LocationsRepository
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import javax.inject.Inject
 
 class LocationDetailsViewModel(): ViewModel() {
     private val repository = LocationsRepository()
@@ -27,7 +25,8 @@ class LocationDetailsViewModel(): ViewModel() {
         viewModelScope.launch {
             try {
 //                println("View Model shared Location ID " + location?.location_id.toString())
-                val cards = repository.getLocationDetails(location_id ?: "", tripAdvisorApiKey)
+                val cards = repository.getLocationDetails(location_id ?: "", Resources.getSystem().getString(
+                    R.string.tripadvisor))
                 println("location " + cards.description.toString())
                 _locationDetails.value = cards
                 Log.e("TourViewModel", _locationDetails.value.toString())

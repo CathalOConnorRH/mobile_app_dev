@@ -13,7 +13,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ie.coconnor.mobileappdev.models.tour.Tour
+import ie.coconnor.mobileappdev.models.locations.Tour
 
 @Composable
 fun CardList(cards: List<Tour>) {

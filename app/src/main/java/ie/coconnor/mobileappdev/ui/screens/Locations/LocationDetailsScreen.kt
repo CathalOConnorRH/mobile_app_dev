@@ -1,16 +1,13 @@
 package ie.coconnor.mobileappdev.ui.screens.Locations
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
-import ie.coconnor.mobileappdev.models.Location
-import ie.coconnor.mobileappdev.models.tour.LocationDetailsViewModel
+import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
 import ie.coconnor.mobileappdev.utils.SharedPref
 
 @Composable

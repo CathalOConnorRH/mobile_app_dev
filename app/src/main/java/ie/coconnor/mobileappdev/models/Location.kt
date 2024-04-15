@@ -1,6 +1,5 @@
 package ie.coconnor.mobileappdev.models
 
-import android.media.Image
 import com.google.gson.annotations.SerializedName
 
 data class LocationResponse(
@@ -17,7 +16,10 @@ data class Location(
     var location_id: String,
     var name: String,
     var address_obj: Address? = null,
-    var image: Image? = null
+    var imageUrl: String? = "",
+    var url: String? = "",
+    var latitude: String? = "",
+    var longitude: String? = ""
 )
 
 data class Address(

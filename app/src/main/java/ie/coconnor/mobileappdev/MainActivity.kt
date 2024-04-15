@@ -1,5 +1,6 @@
 package ie.coconnor.mobileappdev
 
+//import com.google.firebase.firestore.FirebaseFirestore
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.ComponentName
@@ -48,26 +49,25 @@ import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.AndroidEntryPoint
+import ie.coconnor.mobileappdev.models.AuthState
+import ie.coconnor.mobileappdev.models.Constants.BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE
+import ie.coconnor.mobileappdev.models.Constants.LOCATION_PERMISSION_REQUEST_CODE
 import ie.coconnor.mobileappdev.models.DataProvider
+import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
+import ie.coconnor.mobileappdev.models.locations.LocationsViewModel
+import ie.coconnor.mobileappdev.receiver.GeofenceBroadcastReceiver
+import ie.coconnor.mobileappdev.service.BootReceiver
+import ie.coconnor.mobileappdev.service.LocationForegroundService
 import ie.coconnor.mobileappdev.ui.login.LoginScreen
 import ie.coconnor.mobileappdev.ui.login.SignUpScreen
 import ie.coconnor.mobileappdev.ui.navigation.BottomBar
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
-import ie.coconnor.mobileappdev.ui.screens.TestScreen
-import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
-//import com.google.firebase.firestore.FirebaseFirestore
-import ie.coconnor.mobileappdev.models.AuthState
-import ie.coconnor.mobileappdev.models.Constants.BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE
-import ie.coconnor.mobileappdev.models.Constants.LOCATION_PERMISSION_REQUEST_CODE
-import ie.coconnor.mobileappdev.models.tour.LocationDetailsViewModel
-import ie.coconnor.mobileappdev.models.tour.LocationsViewModel
-import ie.coconnor.mobileappdev.receiver.GeofenceBroadcastReceiver
-import ie.coconnor.mobileappdev.service.BootReceiver
-import ie.coconnor.mobileappdev.service.LocationForegroundService
 import ie.coconnor.mobileappdev.ui.screens.AboutScreen
 import ie.coconnor.mobileappdev.ui.screens.Locations.LocationDetailsScreen
-import ie.coconnor.mobileappdev.ui.screens.SettingsScreen
 import ie.coconnor.mobileappdev.ui.screens.Locations.LocationsScreen
+import ie.coconnor.mobileappdev.ui.screens.SettingsScreen
+import ie.coconnor.mobileappdev.ui.screens.TestScreen
+import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
 import ie.coconnor.mobileappdev.utils.SharedPref
 import ie.coconnor.mobileappdev.utils.UIThemeController
 import ie.coconnor.mobileappdev.utils.UIThemeController.updateUITheme
@@ -428,7 +428,7 @@ fun NavigationGraph(navController: NavHostController,
             LocationsScreen(tourViewModel, navController , sharedPref)
         }
         composable(Destinations.AboutScreen.route) {
-            AboutScreen()
+            AboutScreen(navController,sharedPref)
         }
         composable(Destinations.TestScreen.route) {
             TestScreen(navController)

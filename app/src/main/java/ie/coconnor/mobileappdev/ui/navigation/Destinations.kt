@@ -31,7 +31,7 @@ sealed class Destinations(
         icon = Icons.Outlined.Home
     )
 
-    object Favourite : Destinations(
+        object Favourite : Destinations(
         route = "favourite_screen",
         title = "Search",
         icon = Icons.Outlined.Search

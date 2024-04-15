@@ -7,14 +7,29 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.googleAndroidLibrariesMapsplatformSecretsGradlePlugin)
-//    id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
     namespace = "ie.coconnor.mobileappdev"
     compileSdk = 34
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
+        val keystoreFile = project.rootProject.file("apikey.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        //return empty key in case something goes wrong
+        val maps = properties.getProperty("maps") ?: ""
+        val tripadvisor = properties.getProperty("tripadvisor")
+        val openai = properties.getProperty("openai")
+
+        resValue("string", "maps" , maps)
+        resValue("string", "tripadvisor" , tripadvisor)
+        resValue("string", "openai" , openai)
+
         applicationId = "ie.coconnor.mobileappdev"
         minSdk = 25
         targetSdk = 34
@@ -25,6 +40,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+
+
     }
 
     buildTypes {
@@ -72,6 +90,8 @@ dependencies {
     implementation(libs.firebase.database.ktx)
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.compose.material)
+    implementation(libs.support.annotations)
+    implementation(libs.kotlin.stdlib)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
