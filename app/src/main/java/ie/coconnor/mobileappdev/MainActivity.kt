@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -50,7 +51,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.AndroidEntryPoint
 import ie.coconnor.mobileappdev.models.AuthState
+import ie.coconnor.mobileappdev.models.Constants
 import ie.coconnor.mobileappdev.models.Constants.BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE
+import ie.coconnor.mobileappdev.models.Constants.Geofencing.LOCATION_FASTEST_INTERVAL
+import ie.coconnor.mobileappdev.models.Constants.Geofencing.LOCATION_INTERVAL
+import ie.coconnor.mobileappdev.models.Constants.Geofencing.RADIUS
+import ie.coconnor.mobileappdev.models.Constants.Geofencing.REQUEST_CHECK_SETTINGS
 import ie.coconnor.mobileappdev.models.Constants.LOCATION_PERMISSION_REQUEST_CODE
 import ie.coconnor.mobileappdev.models.DataProvider
 import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
@@ -62,15 +68,14 @@ import ie.coconnor.mobileappdev.ui.login.LoginScreen
 import ie.coconnor.mobileappdev.ui.login.SignUpScreen
 import ie.coconnor.mobileappdev.ui.navigation.BottomBar
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
-import ie.coconnor.mobileappdev.ui.screens.AboutScreen
-import ie.coconnor.mobileappdev.ui.screens.Locations.LocationDetailsScreen
-import ie.coconnor.mobileappdev.ui.screens.Locations.LocationsScreen
+import ie.coconnor.mobileappdev.ui.screens.PlanScreen
 import ie.coconnor.mobileappdev.ui.screens.SettingsScreen
 import ie.coconnor.mobileappdev.ui.screens.TestScreen
+import ie.coconnor.mobileappdev.ui.screens.locations.LocationDetailsScreen
+import ie.coconnor.mobileappdev.ui.screens.locations.LocationsScreen
 import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
 import ie.coconnor.mobileappdev.utils.SharedPref
 import ie.coconnor.mobileappdev.utils.UIThemeController
-import ie.coconnor.mobileappdev.utils.UIThemeController.updateUITheme
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -136,7 +141,7 @@ class MainActivity : ComponentActivity() {
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
                 ),
-                REQUEST_CODE
+                Constants.Geofencing.REQUEST_CODE
             )
         }
 
@@ -153,15 +158,16 @@ class MainActivity : ComponentActivity() {
             checkAndRequestLocationPermissions()
         }
         WindowCompat.setDecorFitsSystemWindows(window, true)
-//        window.setFlags(
-//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-//
-//        )
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+
+        )
         window.setTitle("Test")
         createLocationRequest()
-        createGeofence()
-        updateUITheme(sharedPref.getDarkMode())
+       // createGeofence()
+        println(sharedPref.getDarkMode())
+        UIThemeController.updateUITheme(sharedPref.getDarkMode())
 
         setContent {
 
@@ -195,13 +201,6 @@ class MainActivity : ComponentActivity() {
 
             }
         }
-    companion object {
-        const val RADIUS = 20f
-        const val REQUEST_CODE = 200
-        const val REQUEST_CHECK_SETTINGS = 101
-        const val LOCATION_INTERVAL = 100L
-        const val LOCATION_FASTEST_INTERVAL = 100L
-    }
 
     @SuppressLint("MissingPermission")
     private fun currentLocation() {
@@ -399,9 +398,6 @@ class MainActivity : ComponentActivity() {
         val serviceIntent = Intent(this, LocationForegroundService::class.java)
         stopService(serviceIntent)
     }
-
-
-
 }
 
 
@@ -427,14 +423,13 @@ fun NavigationGraph(navController: NavHostController,
         composable(Destinations.LocationsScreen.route) {
             LocationsScreen(tourViewModel, navController , sharedPref)
         }
-        composable(Destinations.AboutScreen.route) {
-            AboutScreen(navController,sharedPref)
+        composable(Destinations.PlanScreen.route) {
+            PlanScreen(navController, sharedPref)
         }
         composable(Destinations.TestScreen.route) {
             TestScreen(navController)
         }
         composable(Destinations.SettingsScreen.route) {
-//            SettingsScreen(navController, authViewModel)
             SettingsScreen(navController, authViewModel)
         }
         composable(Destinations.LocationDetailsScreen.route) {

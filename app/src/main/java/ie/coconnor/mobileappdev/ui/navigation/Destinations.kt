@@ -37,8 +37,8 @@ sealed class Destinations(
         icon = Icons.Outlined.Search
     )
 
-    object AboutScreen : Destinations(
-        route = "AboutScreen",
+    object PlanScreen : Destinations(
+        route = "PlanScreen",
         title = "Plan",
         icon = Icons.Outlined.Favorite
     )

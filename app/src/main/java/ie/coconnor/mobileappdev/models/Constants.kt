@@ -12,10 +12,16 @@ object Constants {
     const val LOCATION_PERMISSION_REQUEST_CODE = 123
 
     val db = FirebaseFirestore.getInstance()
-    var tripAdvisorApiKey = ""
 
     object AuthErrors {
         const val CREDENTIAL_ALREADY_IN_USE = "ERROR_CREDENTIAL_ALREADY_IN_USE"
         const val EMAIL_ALREADY_IN_USE = "ERROR_EMAIL_ALREADY_IN_USE"
+    }
+    object Geofencing {
+        const val RADIUS = 20f
+        const val REQUEST_CODE = 200
+        const val REQUEST_CHECK_SETTINGS = 101
+        const val LOCATION_INTERVAL = 100L
+        const val LOCATION_FASTEST_INTERVAL = 100L
     }
 }

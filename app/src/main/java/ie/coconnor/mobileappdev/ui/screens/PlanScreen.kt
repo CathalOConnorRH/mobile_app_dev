@@ -1,7 +1,9 @@
 package ie.coconnor.mobileappdev.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -23,24 +26,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import ie.coconnor.mobileappdev.models.DataProvider
 import ie.coconnor.mobileappdev.ui.component.CustomDialog
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.utils.SharedPref
 
 @Composable
-fun AboutScreen(
+fun PlanScreen(
     navController: NavController,
-    sharedPref: SharedPref
-)
+    sharedPref: SharedPref)
 {
     val showDialog =  remember { mutableStateOf(false) }
-    val trips = true
 
     if(showDialog.value)
         CustomDialog(value = "", title="Create a trip", setShowDialog = {
@@ -57,8 +60,6 @@ fun AboutScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize(),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
         ) {
             Row(
                 modifier = Modifier,
@@ -71,10 +72,7 @@ fun AboutScreen(
                     fontSize = 50.sp,
                     fontWeight = FontWeight.Bold
                 )
-
             }
-
-
             Row(
                 modifier = Modifier,
                 verticalAlignment = Alignment.CenterVertically,
@@ -130,35 +128,87 @@ fun AboutScreen(
             Row(
                 modifier = Modifier,
                 verticalAlignment = Alignment.CenterVertically,
-            ){
-                OutlinedButton(
-                    onClick = {
-                        showDialog.value = true
-                    },
-                    modifier = Modifier
-//                                .size(width = 300.dp, height = 50.dp)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    shape = RoundedCornerShape(10.dp),
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = Color.White,
-//
-//                        )
-                ) {
-                    Text(
-                        text = "+\tCreate a trip",
-                        modifier = Modifier.padding(6.dp),
-                        fontSize = 15.sp,
-//                                color = Color.Black.copy(alpha = 0.5f)
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
+            ) {
+                if (DataProvider.isAuthenticated) {
+                    OutlinedButton(
+                        onClick = {
+                            showDialog.value = true
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        shape = RoundedCornerShape(10.dp),
+                    ) {
+                        Text(
+                            text = "+\tCreate a new trip",
+                            modifier = Modifier.padding(6.dp),
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier,
+                        verticalAlignment = Alignment.CenterVertically,
+
+                        ) {
+                        Box(
+                            contentAlignment = Alignment.CenterStart,
+                            modifier = Modifier
+                                .padding(30.dp)
+                                .background(
+                                    color = Color.LightGray.copy(alpha = 0.5f),
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                                .height(150.dp)
+
+                        ) {
+                            Column(
+                                modifier = Modifier,
+                            ) {
+
+                                Row(
+                                    modifier = Modifier
+                                        .padding(15.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        text = "Log in to manage your tours and easily plan your next tour",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    OutlinedButton(
+                                        onClick = {
+                                            navController.navigate(Destinations.LoginScreen.route)
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp),
+                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.White,
+
+                                            )
+                                    ) {
+                                        Text(
+                                            text = "Sign In",
+                                            modifier = Modifier.padding(6.dp),
+                                            color = Color.Black.copy()
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            }
-
         }
-
     }
+}
 
 
 @Preview
@@ -166,9 +216,8 @@ fun AboutScreen(
 fun AboutScreenPreview(
     navController: NavController = rememberNavController(),
     sharedPref: SharedPref? = null
-
 ) {
     if (sharedPref != null) {
-        AboutScreen(navController, sharedPref)
+        PlanScreen(navController, sharedPref)
     }
 }

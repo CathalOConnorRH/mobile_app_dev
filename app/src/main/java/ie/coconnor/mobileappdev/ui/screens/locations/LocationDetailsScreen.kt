@@ -1,4 +1,4 @@
-package ie.coconnor.mobileappdev.ui.screens.Locations
+package ie.coconnor.mobileappdev.ui.screens.locations
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text

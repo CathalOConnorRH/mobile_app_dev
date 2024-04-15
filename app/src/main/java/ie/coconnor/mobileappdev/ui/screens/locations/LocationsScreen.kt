@@ -1,8 +1,7 @@
-package ie.coconnor.mobileappdev.ui.screens.Locations
+package ie.coconnor.mobileappdev.ui.screens.locations
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
@@ -36,7 +37,6 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -45,7 +45,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,12 +65,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
 import androidx.wear.compose.material.LocalContentAlpha
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.Address
 import ie.coconnor.mobileappdev.models.Location
 import ie.coconnor.mobileappdev.models.locations.LocationsViewModel
-import ie.coconnor.mobileappdev.ui.component.CustomDialog
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.utils.SharedPref
 
@@ -85,10 +84,11 @@ fun LocationsScreen(viewModel: LocationsViewModel,
     val locations by viewModel.locations.observeAsState()
     var location by remember { mutableStateOf("Waterford, Ireland") }
     var showDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val tripAdvisorApiKey = context.getString(R.string.tripadvisor)
 
     LaunchedEffect(Unit) {
-        println(location)
-        viewModel.fetchTours(location)
+        viewModel.fetchTours(location, tripAdvisorApiKey)
     }
     Scaffold(
         floatingActionButton = {
@@ -99,7 +99,7 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                 shape = CircleShape,
 
                 ) {
-                Icon(Icons.Filled.Search, "Search new location.")
+                Icon(Icons.Filled.Search, "Search for new location.")
             }
         }
     ) {
@@ -121,17 +121,14 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                                     location = newText
                                 },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
-                                colors = TextFieldDefaults.textFieldColors(
-//                                    backgroundColor = Color.Transparent
-                                )
+                                singleLine = true
                             )
                         },
                         confirmButton = {
                             Button(
                                 onClick = {
                                     showDialog = false
-                                    viewModel.fetchTours(location)
+                                    viewModel.fetchTours(location, tripAdvisorApiKey)
                                 }
                             ) {
                                 Text("OK")
@@ -188,7 +185,7 @@ class SampleLocationProvider : PreviewParameterProvider<Location>{
             address_obj = Address("High Street", "", "", "", "", "", "Street 2")
         ),
         Location(
-            name = "Reginalds Tower",
+            name = "Reginald's Tower",
             location_id = "3",
             address_obj = Address("High Street", "", "", "", "", "", "Street 3")
         )
@@ -224,11 +221,10 @@ fun StandardCard(
                     .padding(start = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Miniatura
                 Box(
                     modifier = Modifier
-//                        .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
-                        .size(40.dp),
+                        .size(40.dp)
+                        .verticalScroll(rememberScrollState()),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -252,6 +248,8 @@ fun StandardCard(
                     .memoryCacheKey(location.imageUrl)
                     .error(placeholder)
                     .fallback(placeholder)
+                    .diskCachePolicy(CachePolicy.ENABLED)
+                    .memoryCachePolicy(CachePolicy.ENABLED)
                     .build(),
                 placeholder = painterResource(placeholder),
                 contentDescription = "",
@@ -264,7 +262,6 @@ fun StandardCard(
             Row(Modifier.padding(start = 16.dp, end = 24.dp, top = 16.dp)) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
-//                        text = LoremIpsum(50).values.take(10).joinToString(separator = " "),
                         text = location.address_obj?.address_string.toString(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
@@ -286,20 +283,13 @@ fun StandardCard(
                     Row(modifier = Modifier.align(Alignment.CenterStart)) {
 
                         TextButton(onClick = {
-                            sharedPref?.setLocationId(location.location_id.toString())
+                            sharedPref?.setLocationId(location.location_id)
                             navController.navigate(Destinations.LocationDetailsScreen.route)
                         }) {
                             Text(text = "More Details")
                         }
-
-//                        Spacer(modifier = Modifier.width(8.dp))
-//
-//                        TextButton(onClick = { /*TODO*/ }) {
-//                            Text(text = "ACCIÓN 2")
-//                        }
                     }
 
-                    // Iconos
                     Row(modifier = Modifier.align(Alignment.CenterEnd)) {
                         IconButton(onClick = { /*TODO*/ }) {
                             Icon(Icons.Default.Favorite, contentDescription = null)
@@ -307,6 +297,7 @@ fun StandardCard(
 
                         val sendIntent = Intent(Intent.ACTION_SEND).apply {
                             putExtra(Intent.EXTRA_TEXT, location.url)
+                            putExtra(Intent.EXTRA_TITLE, "Check out this location I want to visit")
                             type = "text/plain"
                         }
                         val shareIntent = Intent.createChooser(sendIntent, null)
