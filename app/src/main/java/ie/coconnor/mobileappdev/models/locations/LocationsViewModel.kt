@@ -5,25 +5,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.toObject
-import com.google.firebase.firestore.toObjects
-import ie.coconnor.mobileappdev.models.Constants
 import ie.coconnor.mobileappdev.models.Location
 import ie.coconnor.mobileappdev.models.LocationResponse
+import ie.coconnor.mobileappdev.repository.FirestoreRepository
 import ie.coconnor.mobileappdev.repository.LocationsRepository
+import ie.coconnor.mobileappdev.repository.Trip
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class LocationsViewModel() : ViewModel() {
 
     private val repository = LocationsRepository()
+    private val fireStoreRepository = FirestoreRepository()
 
     private val _locations = MutableLiveData<LocationResponse>()
-
     val locations: LiveData<LocationResponse> = _locations
 
-    val category: String = "attractions"
+    private val _trips = MutableLiveData<List<Trip>>()
+    val trips: LiveData<List<Trip>> = _trips
 
+    private val category: String = "attractions"
 
     fun fetchTours(location: String, tripAdvisorApiKey: String) {
         viewModelScope.launch {
@@ -38,6 +38,32 @@ class LocationsViewModel() : ViewModel() {
             }
         }
     }
+
+    fun fetchTrips(){
+        viewModelScope.launch {
+            try {
+                val cards = fireStoreRepository.getTrips()
+                println(cards.toString())
+                _trips.value = cards
+                Log.e("TourViewModel", _trips.value.toString())
+            } catch (e: Exception) {
+                // Handle error
+                Log.e("TourViewModel", e.message.toString());
+            }
+        }
+    }
+    fun createOrUpdateTrip(location: Location){
+        viewModelScope.launch {
+            try {
+                Log.i("PlanViewModel", location.toString())
+                val cards = fireStoreRepository.createOrUpdateTrip(location)
+                println(cards.toString())
+            } catch (e: Exception){
+                Log.e("PlanViewModel", e.message.toString());
+            }
+        }
+    }
+
 }
 
 //    fun getSavedLocations(){

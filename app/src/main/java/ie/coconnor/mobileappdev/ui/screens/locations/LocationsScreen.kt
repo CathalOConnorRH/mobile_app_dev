@@ -60,7 +60,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -84,6 +83,7 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                     sharedPref: SharedPref)
 {
     val locations by viewModel.locations.observeAsState()
+    val trips by viewModel.trips.observeAsState()
 
     var location by remember { mutableStateOf("Waterford, Ireland") }
     var showDialog by remember { mutableStateOf(false) }
@@ -92,6 +92,7 @@ fun LocationsScreen(viewModel: LocationsViewModel,
 
     LaunchedEffect(Unit) {
         viewModel.fetchTours(location, tripAdvisorApiKey)
+        viewModel.fetchTrips()
     }
     Scaffold(
         floatingActionButton = {
@@ -149,20 +150,19 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                     )
                 }
                 // Display the list of credit cards
-                LazyColumn {
-                    locations?.let {
-                        items(it.data) { location ->
-                            //Text(text = tour.name)
-                            StandardCard(
-                                location = location,
-                                navController = navController,
-                                sharedPref = sharedPref
-                            )
-                            Spacer(modifier = Modifier.height(10.dp)) // Add a divider between items
+                    LazyColumn {
+                        locations?.let {
+                            items(it.data) { location ->
+                                //Text(text = tour.name)
+                                StandardLocationCard(
+                                    location = location,
+                                    navController = navController,
+                                    sharedPref = sharedPref
+                                )
+                                Spacer(modifier = Modifier.height(10.dp)) // Add a divider between items
+                            }
                         }
                     }
-                }
-
             }
         }
     }
@@ -172,11 +172,11 @@ fun LocationsScreen(viewModel: LocationsViewModel,
 @Composable
 fun PreviewStandCardItem(
     @PreviewParameter(SampleLocationProvider::class) location: Location){
-    StandardCard(location = location)
+    StandardLocationCard(location = location)
 }
 
 @Composable
-fun StandardCard(
+fun StandardLocationCard(
     location: Location,
     modifier: Modifier = Modifier,
     border: BorderStroke? = null,
@@ -276,6 +276,7 @@ fun StandardCard(
 
                     Row(modifier = Modifier.align(Alignment.CenterEnd)) {
                         IconButton(onClick = {
+                            viewModel.createOrUpdateTrip(location)
 
                             //viewModel.saveLocation(location)
                         }) {

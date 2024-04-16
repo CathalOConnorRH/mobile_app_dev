@@ -12,7 +12,6 @@ import android.os.Build
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -61,6 +60,7 @@ import ie.coconnor.mobileappdev.models.Constants.LOCATION_PERMISSION_REQUEST_COD
 import ie.coconnor.mobileappdev.models.DataProvider
 import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
 import ie.coconnor.mobileappdev.models.locations.LocationsViewModel
+import ie.coconnor.mobileappdev.models.plan.PlanViewModel
 import ie.coconnor.mobileappdev.receiver.GeofenceBroadcastReceiver
 import ie.coconnor.mobileappdev.service.BootReceiver
 import ie.coconnor.mobileappdev.service.LocationForegroundService
@@ -68,7 +68,7 @@ import ie.coconnor.mobileappdev.ui.login.LoginScreen
 import ie.coconnor.mobileappdev.ui.login.SignUpScreen
 import ie.coconnor.mobileappdev.ui.navigation.BottomBar
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
-import ie.coconnor.mobileappdev.ui.screens.PlanScreen
+import ie.coconnor.mobileappdev.ui.plan.PlanScreen
 import ie.coconnor.mobileappdev.ui.screens.SettingsScreen
 import ie.coconnor.mobileappdev.ui.screens.TestScreen
 import ie.coconnor.mobileappdev.ui.screens.locations.LocationDetailsScreen
@@ -87,6 +87,8 @@ class MainActivity : ComponentActivity() {
     val authViewModel by viewModels<AuthViewModel>()
     val tourViewModel by viewModels<LocationsViewModel>()
     val locationDetailsViewModel by viewModels<LocationDetailsViewModel> ()
+    val planViewModel by viewModels<PlanViewModel>()
+
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var geofencingClient: GeofencingClient
@@ -164,7 +166,7 @@ class MainActivity : ComponentActivity() {
 //
 //        )
         window.setTitle("Test")
-        createLocationRequest()
+        //createLocationRequest()
        // createGeofence()
         println(sharedPref.getDarkMode())
         UIThemeController.updateUITheme(sharedPref.getDarkMode())
@@ -194,7 +196,7 @@ class MainActivity : ComponentActivity() {
                         Box(
                             modifier = Modifier.padding(paddingValues)
                         ) {
-                            NavigationGraph(navController = navController, authViewModel = authViewModel, tourViewModel = tourViewModel, locationDetailsViewModel = locationDetailsViewModel, sharedPref = sharedPref)
+                            NavigationGraph(navController = navController, authViewModel = authViewModel, tourViewModel = tourViewModel, locationDetailsViewModel = locationDetailsViewModel, planViewModel, sharedPref = sharedPref)
                         }
                     }
                 }
@@ -406,6 +408,7 @@ fun NavigationGraph(navController: NavHostController,
                     authViewModel: AuthViewModel,
                     tourViewModel: LocationsViewModel,
                     locationDetailsViewModel: LocationDetailsViewModel,
+                    planViewModel: PlanViewModel,
                     sharedPref: SharedPref) {
     var startDestination = Destinations.LocationsScreen.route
 
@@ -424,7 +427,7 @@ fun NavigationGraph(navController: NavHostController,
             LocationsScreen(tourViewModel, navController , sharedPref)
         }
         composable(Destinations.PlanScreen.route) {
-            PlanScreen(navController, sharedPref)
+            PlanScreen(planViewModel, navController, sharedPref)
         }
         composable(Destinations.TestScreen.route) {
             TestScreen(navController)
