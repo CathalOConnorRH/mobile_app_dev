@@ -13,7 +13,7 @@ data class LocationDetailsResponse(
 )
 
 data class Location(
-    var location_id: String,
+    var location_id: String? = "",
     var name: String,
     var address_obj: Address? = null,
     var imageUrl: String? = "",
@@ -25,133 +25,133 @@ data class Location(
 data class Address(
     val street1: String? = null,
     val street2: String? = null,
-    var city: String,
-    val state: String,
-    val country: String,
+    var city: String? = null,
+    val state: String? = null,
+    val country: String? = null,
     val postalcode: String? = null,
     val address_string: String
 )
 
 
 data class LocationDetails(
-    val address_obj: AddressObj,
-    val ancestors: List<Ancestor>,
-    val awards: List<Award>,
-    val category: Category,
-    val description: String,
-    val email: String,
-    val groups: List<Group>,
-    val hours: Hours,
-    val latitude: String,
-    val location_id: String,
-    val longitude: String,
-    val name: String,
-    val neighborhood_info: List<Any>,
-    val num_reviews: String,
-    val phone: String,
-    val photo_count: String,
-    val ranking_data: RankingData,
-    val rating: String,
-    val rating_image_url: String,
-    val review_rating_count: ReviewRatingCount,
-    val see_all_photos: String,
-    val subcategory: List<Subcategory>,
-    val timezone: String,
-    val trip_types: List<TripType>,
-    val web_url: String,
-    val website: String,
-    val write_review: String
+    val address_obj: AddressObj? = null,
+    val ancestors: List<Ancestor>? = null,
+    val awards: List<Award>? = null,
+    val category: Category? = null,
+    val description: String? = null,
+    val email: String? = null,
+    val groups: List<Group>? = null,
+    val hours: Hours? = null,
+    val latitude: String? = null,
+    val location_id: String? = null,
+    val longitude: String? = null,
+    val name: String? = null,
+    val neighborhood_info: List<Any>? = null,
+    val num_reviews: String? = null,
+    val phone: String? = null,
+    val photo_count: String? = null,
+    val ranking_data: RankingData? = null,
+    val rating: String? = null,
+    val rating_image_url: String? = null,
+    val review_rating_count: ReviewRatingCount? = null,
+    val see_all_photos: String? = null,
+    val subcategory: List<Subcategory>? = null,
+    val timezone: String? = null,
+    val trip_types: List<TripType>? = null,
+    val web_url: String? = null,
+    val website: String? = null,
+    val write_review: String? = null
 ) {
     data class AddressObj(
-        val address_string: String,
-        val city: String,
-        val country: String,
-        val postalcode: String,
-        val state: String,
-        val street1: String,
+        val address_string: String? = null,
+        val city: String? = null,
+        val country: String? = null,
+        val postalcode: String? = null,
+        val state: String? = null,
+        val street1: String? = null,
         val street2: String
     )
 
     data class Ancestor(
-        val level: String,
-        val location_id: String,
+        val level: String? = null,
+        val location_id: String? = null,
         val name: String
     )
 
     data class Award(
-        val award_type: String,
-        val categories: List<Any>,
-        val display_name: String,
-        val images: Images,
+        val award_type: String? = null,
+        val categories: List<Any>? = null,
+        val display_name: String? = null,
+        val images: Images? = null,
         val year: String
     ) {
         data class Images(
-            val large: String,
-            val small: String,
+            val large: String? = null,
+            val small: String? = null,
             val tiny: String
         )
     }
 
     data class Category(
-        val localized_name: String,
+        val localized_name: String? = null,
         val name: String
     )
 
     data class Group(
-        val categories: List<Category>,
-        val localized_name: String,
+        val categories: List<Category>? = null,
+        val localized_name: String? = null,
         val name: String
     ) {
         data class Category(
-            val localized_name: String,
+            val localized_name: String? = null,
             val name: String
         )
     }
 
     data class Hours(
-        val periods: List<Period>,
+        val periods: List<Period>? = null,
         val weekday_text: List<String>
     ) {
         data class Period(
-            val close: Close,
+            val close: Close? = null,
             val `open`: Open
         ) {
             data class Close(
-                val day: Int,
+                val day: Int? = null,
                 val time: String
             )
 
             data class Open(
-                val day: Int,
+                val day: Int? = null,
                 val time: String
             )
         }
     }
 
     data class RankingData(
-        val geo_location_id: String,
-        val geo_location_name: String,
-        val ranking: String,
-        val ranking_out_of: String,
+        val geo_location_id: String? = null,
+        val geo_location_name: String? = null,
+        val ranking: String? = null,
+        val ranking_out_of: String? = null,
         val ranking_string: String
     )
 
     data class ReviewRatingCount(
-        val `1`: String,
-        val `2`: String,
-        val `3`: String,
-        val `4`: String,
+        val `1`: String? = null,
+        val `2`: String? = null,
+        val `3`: String? = null,
+        val `4`: String? = null,
         val `5`: String
     )
 
     data class Subcategory(
-        val localized_name: String,
+        val localized_name: String? = null,
         val name: String
     )
 
     data class TripType(
-        val localized_name: String,
-        val name: String,
+        val localized_name: String? = null,
+        val name: String? = null,
         val value: String
     )
 }

@@ -121,6 +121,8 @@ dependencies {
     implementation ("androidx.compose.runtime:runtime-livedata:1.6.3")
     implementation ("com.google.android.gms:play-services-maps:18.1.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("com.google.maps.android:maps-compose:4.3.3")
+
 
     implementation ("com.squareup.moshi:moshi:1.14.0")
     implementation ("com.squareup.moshi:moshi-kotlin:1.14.0")

@@ -14,11 +14,11 @@ class LocationsRepository {
         var locations = locationsService.getLocations(apiKey,searchQuery,category)
         if(!locations.data.isEmpty()){
             locations.data.forEach {
-                var photos = getLocationPhotos(it.location_id, apiKey)
-                it.imageUrl= photos.data[0].images.medium?.url.toString()
+                var photos = it.location_id?.let { it1 -> getLocationPhotos(it1, apiKey) }
+                it.imageUrl= photos?.data?.get(0)?.images?.medium?.url.toString()
 
-                var details = getLocationDetails(it.location_id, apiKey)
-                it.url = details.web_url
+                var details = it.location_id?.let { it1 -> getLocationDetails(it1, apiKey) }
+                it.url = details?.web_url
             }
         }
         return locations

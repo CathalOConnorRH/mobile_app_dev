@@ -158,11 +158,11 @@ class MainActivity : ComponentActivity() {
             checkAndRequestLocationPermissions()
         }
         WindowCompat.setDecorFitsSystemWindows(window, true)
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-
-        )
+//        window.setFlags(
+//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+//
+//        )
         window.setTitle("Test")
         createLocationRequest()
        // createGeofence()

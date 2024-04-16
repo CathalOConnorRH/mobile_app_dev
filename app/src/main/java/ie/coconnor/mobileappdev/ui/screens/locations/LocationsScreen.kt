@@ -59,6 +59,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -82,6 +84,7 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                     sharedPref: SharedPref)
 {
     val locations by viewModel.locations.observeAsState()
+
     var location by remember { mutableStateOf("Waterford, Ireland") }
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -104,7 +107,7 @@ fun LocationsScreen(viewModel: LocationsViewModel,
         }
     ) {
         Column {
-            if (locations?.data?.isEmpty() == true) {
+            if (locations?.data?.isNullOrEmpty() == true) {
                 // Show loading indicator or placeholder
                 Text(text = "Loading...")
             } else {
@@ -172,26 +175,6 @@ fun PreviewStandCardItem(
     StandardCard(location = location)
 }
 
-class SampleLocationProvider : PreviewParameterProvider<Location>{
-    override val values = sequenceOf(
-        Location(
-            name = "Waterford Treasures",
-            location_id = "1",
-            address_obj = Address("High Street", "", "", "", "", "", "Street 1")
-        ),
-        Location(
-            name = "Waterford Death Museum",
-            location_id = "2",
-            address_obj = Address("High Street", "", "", "", "", "", "Street 2")
-        ),
-        Location(
-            name = "Reginald's Tower",
-            location_id = "3",
-            address_obj = Address("High Street", "", "", "", "", "", "Street 3")
-        )
-    )
-}
-
 @Composable
 fun StandardCard(
     location: Location,
@@ -201,7 +184,8 @@ fun StandardCard(
     contentColor: Color = contentColorFor(background),
     shape: Shape = MaterialTheme.shapes.extraLarge,
     navController: NavController = rememberNavController(),
-    sharedPref: SharedPref? = null
+    sharedPref: SharedPref? = null,
+    viewModel: LocationsViewModel = hiltViewModel()
 
 ) {
     val placeholder = R.drawable.vector
@@ -283,7 +267,7 @@ fun StandardCard(
                     Row(modifier = Modifier.align(Alignment.CenterStart)) {
 
                         TextButton(onClick = {
-                            sharedPref?.setLocationId(location.location_id)
+                            location.location_id?.let { sharedPref?.setLocationId(it) }
                             navController.navigate(Destinations.LocationDetailsScreen.route)
                         }) {
                             Text(text = "More Details")
@@ -291,7 +275,11 @@ fun StandardCard(
                     }
 
                     Row(modifier = Modifier.align(Alignment.CenterEnd)) {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+
+                            //viewModel.saveLocation(location)
+                        }) {
+
                             Icon(Icons.Default.Favorite, contentDescription = null)
                         }
 
@@ -327,4 +315,25 @@ fun SeachButton(onClick: () -> Unit) {
         ) {
         Icon(Icons.Filled.Search, "Search new location.")
     }
+}
+
+
+class SampleLocationProvider : PreviewParameterProvider<Location>{
+    override val values = sequenceOf(
+        Location(
+            name = "Waterford Treasures",
+            location_id = "1",
+            address_obj = Address("High Street", "", "", "", "", "", "Street 1")
+        ),
+        Location(
+            name = "Waterford Death Museum",
+            location_id = "2",
+            address_obj = Address("High Street", "", "", "", "", "", "Street 2")
+        ),
+        Location(
+            name = "Reginald's Tower",
+            location_id = "3",
+            address_obj = Address("High Street", "", "", "", "", "", "Street 3")
+        )
+    )
 }

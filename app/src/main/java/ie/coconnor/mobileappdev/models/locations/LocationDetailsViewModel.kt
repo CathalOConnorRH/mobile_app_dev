@@ -18,18 +18,13 @@ class LocationDetailsViewModel(): ViewModel() {
     private val _locationDetails = MutableLiveData<LocationDetails>()
     val locationDetails: LiveData<LocationDetails> = _locationDetails
 
-//    val location: String = "Waterford, Ireland"
-//    val category: String = "attractions"
-
-    fun fetchLocationDetails(location_id: String) {
+    fun fetchLocationDetails(location_id: String, tripAdvisorApiKey: String) {
         viewModelScope.launch {
             try {
-//                println("View Model shared Location ID " + location?.location_id.toString())
-                val cards = repository.getLocationDetails(location_id ?: "", Resources.getSystem().getString(
-                    R.string.tripadvisor))
-                println("location " + cards.description.toString())
-                _locationDetails.value = cards
-                Log.e("TourViewModel", _locationDetails.value.toString())
+                val details = repository.getLocationDetails(location_id, tripAdvisorApiKey)
+                println("location " + details.description.toString())
+                _locationDetails.value = details
+//                Log.e("TourViewModel", _locationDetails.value.toString()
             } catch (http: HttpException) {
                 Log.e("TourViewModel", http.response().toString())
             } catch (e: Exception) {
@@ -37,8 +32,6 @@ class LocationDetailsViewModel(): ViewModel() {
                 Log.e("TourViewModel", e.cause.toString());
                 Log.e("TourViewModel", e.message.toString());
                 Log.e("TourViewModel", e.stackTrace.contentToString());
-
-
             }
         }
     }
