@@ -1,16 +1,37 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.googleAndroidLibrariesMapsplatformSecretsGradlePlugin)
 }
 
 android {
     namespace = "ie.coconnor.mobileappdev"
     compileSdk = 34
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
+        val keystoreFile = project.rootProject.file("apikey.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        //return empty key in case something goes wrong
+        val maps = properties.getProperty("maps") ?: ""
+        val tripadvisor = properties.getProperty("tripadvisor")
+        val openai = properties.getProperty("openai")
+
+        resValue("string", "maps" , maps)
+        resValue("string", "tripadvisor" , tripadvisor)
+        resValue("string", "openai" , openai)
+
         applicationId = "ie.coconnor.mobileappdev"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -19,6 +40,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+
+
     }
 
     buildTypes {
@@ -36,6 +60,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -56,8 +81,17 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.transportation.consumer)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.androidx.compose.material)
+    implementation(libs.support.annotations)
+    implementation(libs.kotlin.stdlib)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,12 +101,32 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     // Splash API
     implementation ("androidx.core:core-splashscreen:1.0.1")
-    implementation("com.google.android.gms:play-services-auth:20.4.1")
-
+    implementation("com.google.android.gms:play-services-auth:20.5.0")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
     implementation ("androidx.navigation:navigation-compose:2.5.3")
     implementation ("io.coil-kt:coil-compose:2.2.2")
-    implementation("com.google.android.material:material:1.11.0")
+    implementation ("androidx.compose.material:material-icons-extended:1.6.3")
+    implementation ("androidx.appcompat:appcompat:1.2.0")
+    implementation ("com.firebaseui:firebase-ui-auth:7.2.0")
+
+    implementation("com.google.dagger:hilt-android:2.51")
+    kapt("com.google.dagger:hilt-android-compiler:2.51")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+
+    // Retrofit for network requests
+    implementation ("com.squareup.retrofit2:retrofit:2.10.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.10.0")
+
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.3")
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("com.google.maps.android:maps-compose:4.3.3")
+    implementation ("com.google.maps.android:maps-ktx:5.0.0")
+
+    implementation ("com.squareup.moshi:moshi:1.14.0")
+    implementation ("com.squareup.moshi:moshi-kotlin:1.14.0")
+
+    implementation("io.klogging:klogging-jvm:0.5.11")
 
 }
