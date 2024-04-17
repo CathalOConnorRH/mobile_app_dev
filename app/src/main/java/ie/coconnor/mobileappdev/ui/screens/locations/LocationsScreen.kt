@@ -276,7 +276,7 @@ fun StandardLocationCard(
 
                     Row(modifier = Modifier.align(Alignment.CenterEnd)) {
                         IconButton(onClick = {
-                            viewModel.createOrUpdateTrip(location)
+                            viewModel.createOrUpdateTrip(location, documentName = "test")
 
                             //viewModel.saveLocation(location)
                         }) {

@@ -1,6 +1,7 @@
 package ie.coconnor.mobileappdev.repository
 
 import android.util.Log
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.toObjects
 import ie.coconnor.mobileappdev.models.Constants
 import ie.coconnor.mobileappdev.models.DataProvider
@@ -10,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 class FirestoreRepository {
     suspend fun getTrips(): List<Trip> {
         val querySnapshot = Constants.db.collection("trips")
-                .whereEqualTo("user", DataProvider.user?.uid)
+                .whereEqualTo("username", DataProvider.user?.uid)
                 .get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
@@ -27,27 +28,33 @@ class FirestoreRepository {
         return trips
     }
 
-    suspend fun createOrUpdateTrip(tripName: Location): String{
-        val trip = hashMapOf(
-            "name" to tripName.name,
-             "user" to (DataProvider.user?.uid ?: ""),
-             "location" to {tripName}
-        )
+    suspend fun updateTrip(tripName: Location, documentName: String): String{
 
-        var trips = Constants.db.collection("trips").document("iWywtwQ04MXkETRcaqDD")
-            .update(trip)
+        var trips = Constants.db.collection("trips").document(documentName)
+            .update("locations", FieldValue.arrayUnion(tripName))
             .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
             .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }.await()
-        println("HERE ${trip.get("name")}")
-        return trip.toString()
+        return trips.toString()
+        return ""
+    }
+    suspend fun createTrip(tripName: Location, documentName: String): String{
+        val trip = Trip(
+            tripName.name,
+             DataProvider.user?.uid,
+            listOf(tripName)
+        )
+
+        var trips = Constants.db.collection("trips").document(documentName)
+            .set(tripName)
+            .addOnSuccessListener { Log.d(TAG, "Document ${documentName} successfully written!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error writing document ${documentName}", e) }.await()
+        return trips.toString()
     }
     companion object {
         private const val TAG = "FirestoreRepository"
     }
 }
-data class Trips(
-    var data: List<Trip>
-)
+
 data class Trip(
     var name: String? = "",
     var username: String? = "",

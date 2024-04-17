@@ -18,11 +18,11 @@ class PlanViewModel: ViewModel()  {
 
     val trips: LiveData<List<Trip>> = _trips
 
-    fun createOrUpdateTrip(tripName: Location){
+    fun createTrip(tripName: Location, documentName: String){
         viewModelScope.launch {
             try {
                 Log.i("PlanViewModel", tripName.toString())
-                val cards = repository.createOrUpdateTrip(tripName)
+                val cards = repository.createTrip(tripName, documentName)
                 println(cards.toString())
             } catch (e: Exception){
                 Log.e("PlanViewModel", e.message.toString());

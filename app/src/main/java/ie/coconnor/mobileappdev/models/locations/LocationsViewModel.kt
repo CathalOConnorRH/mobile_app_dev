@@ -52,11 +52,11 @@ class LocationsViewModel() : ViewModel() {
             }
         }
     }
-    fun createOrUpdateTrip(location: Location){
+    fun createOrUpdateTrip(location: Location, documentName: String){
         viewModelScope.launch {
             try {
                 Log.i("PlanViewModel", location.toString())
-                val cards = fireStoreRepository.createOrUpdateTrip(location)
+                val cards = fireStoreRepository.createTrip(location, documentName)
                 println(cards.toString())
             } catch (e: Exception){
                 Log.e("PlanViewModel", e.message.toString());

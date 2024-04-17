@@ -29,6 +29,7 @@ import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -66,6 +67,7 @@ import ie.coconnor.mobileappdev.ui.component.CustomDialog
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.utils.SharedPref
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlanScreen(
     viewModel: PlanViewModel,
@@ -109,7 +111,6 @@ fun PlanScreen(
             }
         }
     ) { paddingValues ->
-        if (DataProvider.isAuthenticated) {
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
@@ -127,8 +128,101 @@ fun PlanScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
-            }
-            if(trips.isNullOrEmpty()) {
+
+            if (DataProvider.isAuthenticated) {
+
+                if(trips.isNullOrEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Row(
+                            modifier = Modifier,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+
+                            Icon(
+                                imageVector = Icons.Outlined.Favorite,
+                                contentDescription = "Favourite"
+                            )
+
+                            Text(
+                                text = "Save your locations you'd like to visit",
+                                modifier = Modifier
+                                    .padding(10.dp),
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Row(
+                            modifier = Modifier,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.LocationOn,
+                                contentDescription = "Show saves on map"
+                            )
+                            Text(
+                                text = "See your locations on a map",
+                                modifier = Modifier
+                                    .padding(10.dp),
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(40.dp))
+
+                        Row(
+                            modifier = Modifier,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+
+                            OutlinedButton(
+                                onClick = {
+                                    showDialog = true
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                shape = RoundedCornerShape(10.dp),
+                            ) {
+                                Text(
+                                    text = "+\tCreate a new trip",
+                                    modifier = Modifier.padding(6.dp),
+                                    fontSize = 15.sp,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        LazyColumn {
+                            trips?.let {
+                                items(it) { trip ->
+
+                                    //Text(text = tour.name)
+                                    StandardPlanCard(
+                                        trip = trip,
+                                        navController = navController,
+                                        sharedPref = sharedPref
+                                    )
+                                    Spacer(modifier = Modifier.height(10.dp)) // Add a divider between items
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
                 Column(
                     modifier = Modifier
                         .padding(paddingValues)
@@ -139,130 +233,57 @@ fun PlanScreen(
                     Row(
                         modifier = Modifier,
                         verticalAlignment = Alignment.CenterVertically,
-                    ) {
 
-                        Icon(
-                            imageVector = Icons.Outlined.Favorite,
-                            contentDescription = "Favourite"
-                        )
-
-                        Text(
-                            text = "Save your locations you'd like to visit",
-                            modifier = Modifier
-                                .padding(10.dp),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Row(
-                        modifier = Modifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.LocationOn,
-                            contentDescription = "Show saves on map"
-                        )
-                        Text(
-                            text = "See your locations on a map",
-                            modifier = Modifier
-                                .padding(10.dp),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(40.dp))
-
-                    Row(
-                        modifier = Modifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-
-                        OutlinedButton(
-                            onClick = {
-                                showDialog = true
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            shape = RoundedCornerShape(10.dp),
                         ) {
-                            Text(
-                                text = "+\tCreate a new trip",
-                                modifier = Modifier.padding(6.dp),
-                                fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    }
-                }
-            } else {
-                LazyColumn {
-                    trips?.let {
-                        items(it) { trip ->
-                            //Text(text = tour.name)
-                            StandardPlanCard(
-                                trip = trip,
-                                navController = navController,
-                                sharedPref = sharedPref
-                            )
-                            Spacer(modifier = Modifier.height(10.dp)) // Add a divider between items
-                        }
-                    }
-                }
-            }
-        } else {
-            Row(
-                modifier = Modifier,
-                verticalAlignment = Alignment.CenterVertically,
-
-                ) {
-                Box(
-                    contentAlignment = Alignment.CenterStart,
-                    modifier = Modifier
-                        .padding(30.dp)
-                        .background(
-                            color = Color.LightGray.copy(alpha = 0.5f),
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                        .height(150.dp)
-
-                ) {
-                    Column(
-                        modifier = Modifier,
-                    ) {
-
-                        Row(
+                        Box(
+                            contentAlignment = Alignment.CenterStart,
                             modifier = Modifier
-                                .padding(15.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = "Log in to manage your tours and easily plan your next tour",
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            OutlinedButton(
-                                onClick = {
-                                    navController.navigate(Destinations.LoginScreen.route)
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                shape = RoundedCornerShape(10.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-
-                                    )
-                            ) {
-                                Text(
-                                    text = "Sign In",
-                                    modifier = Modifier.padding(6.dp),
-                                    color = Color.Black.copy()
+                                .padding(30.dp)
+                                .background(
+                                    color = Color.LightGray.copy(alpha = 0.5f),
+                                    shape = RoundedCornerShape(20.dp)
                                 )
+                                .height(150.dp)
+
+                        ) {
+                            Column(
+                                modifier = Modifier,
+                            ) {
+
+                                Row(
+                                    modifier = Modifier
+                                        .padding(15.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        text = "Log in to manage your tours and easily plan your next tour",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    OutlinedButton(
+                                        onClick = {
+                                            navController.navigate(Destinations.LoginScreen.route)
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp),
+                                        shape = RoundedCornerShape(10.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.White,
+
+                                            )
+                                    ) {
+                                        Text(
+                                            text = "Sign In",
+                                            modifier = Modifier.padding(6.dp),
+                                            color = Color.Black.copy()
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -327,7 +348,7 @@ fun StandardPlanCard(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .height(72.dp)
+//                    .height(72.dp)
                     .padding(start = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

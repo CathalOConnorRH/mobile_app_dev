@@ -20,16 +20,19 @@ data class Location(
     var url: String? = "",
     var latitude: String? = "",
     var longitude: String? = ""
-)
+){
+    constructor(): this("","")
+
+}
 
 data class Address(
-    val street1: String? = null,
-    val street2: String? = null,
-    var city: String? = null,
-    val state: String? = null,
-    val country: String? = null,
-    val postalcode: String? = null,
-    val address_string: String
+    val street1: String? = "",
+    val street2: String? = "",
+    var city: String? = "",
+    val state: String? = "",
+    val country: String? = "",
+    val postalcode: String? = "",
+    val address_string: String? = ""
 )
 
 
