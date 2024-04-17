@@ -13,6 +13,7 @@ class SharedPref @Inject constructor(
 
         private const val PREF_DARK_MODE = "dark_mode"
         private const val LOCATION_ID = ""
+        private const val LOCATION_IMAGE = ""
         private const val LOCATION_TO_SEARCH = "Waterford, Ireland"
 
     }
@@ -52,7 +53,7 @@ class SharedPref @Inject constructor(
         getSharedPerf()
             .edit()
             .apply {
-                putString(LOCATION_ID, location_id)
+                putString(LOCATION_ID, location_id.toString())
                 apply()
             }
     }
@@ -72,5 +73,17 @@ class SharedPref @Inject constructor(
 
     fun getLocationToSearch(): String {
         return getSharedPerf().getString(LOCATION_TO_SEARCH, LOCATION_TO_SEARCH).toString()
+    }
+
+    fun setLocationImage(imageUrl: String) {
+        getSharedPerf()
+            .edit()
+            .apply {
+                putString(LOCATION_IMAGE, imageUrl)
+                apply()
+            }
+    }
+    fun getLocationImage(): String{
+        return getSharedPerf().getString(LOCATION_IMAGE, LOCATION_IMAGE).toString()
     }
 }

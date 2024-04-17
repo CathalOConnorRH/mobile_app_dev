@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.wear.compose.material.ContentAlpha
 import androidx.wear.compose.material.LocalContentAlpha
+import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
@@ -76,9 +77,9 @@ fun LocationDetailsScreen(
 
     val context = LocalContext.current
     val tripAdvisorApiKey = context.getString(R.string.tripadvisor)
-
     LaunchedEffect(Unit) {
         val location_id = sharedPref.getLocationId()
+//        locationImageUrl = sharedPref.getLocationImageUrl()
         println(location_id)
         viewModel.fetchLocationDetails(location_id, tripAdvisorApiKey)
     }
@@ -144,10 +145,8 @@ fun LocationDetailsDisplay(
             }
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(location.imageUrl)
+                    .data(placeholder)
                     .crossfade(true)
-                    .diskCacheKey(location.imageUrl)
-                    .memoryCacheKey(location.imageUrl)
                     .error(placeholder)
                     .fallback(placeholder)
                     .diskCachePolicy(CachePolicy.ENABLED)
