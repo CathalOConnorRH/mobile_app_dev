@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ButtonDefaults
@@ -61,6 +63,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
     {
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .fillMaxSize(),
         ) {
             Row(
@@ -350,52 +353,54 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                     }
                 }
             }
-            Row(
-                modifier = Modifier,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "Account Settings",
-                    modifier = Modifier
-                        .padding(10.dp),
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
+            if(DataProvider.isAuthenticated && !DataProvider.isAnonymous ) {
+                Row(
+                    modifier = Modifier,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-
-                    Row(
+                    Text(
+                        text = "Account Settings",
+                        modifier = Modifier
+                            .padding(10.dp),
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-
                     ) {
-                        if(DataProvider.isAuthenticated) {
 
-                        OutlinedButton(
-                            onClick = {
-                                authViewModel.signOut()
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            shape = RoundedCornerShape(10.dp),
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_google_logo),
-                                contentDescription = "Sign Out"
-                            )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
 
-                            Text(
-                                text = "Sign Out",
-                                modifier = Modifier.padding(6.dp),
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
+                            ) {
+                            if (DataProvider.isAuthenticated) {
+
+                                OutlinedButton(
+                                    onClick = {
+                                        authViewModel.signOut()
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_google_logo),
+                                        contentDescription = "Sign Out"
+                                    )
+
+                                    Text(
+                                        text = "Sign Out",
+                                        modifier = Modifier.padding(6.dp),
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                }
                             }
                         }
                     }

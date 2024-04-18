@@ -23,7 +23,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private var oneTapClient: SignInClient,
@@ -32,6 +34,7 @@ class AuthRepositoryImpl @Inject constructor(
     @Named(Constants.SIGN_UP_REQUEST)
     private var signUpRequest: BeginSignInRequest,
 ): AuthRepository {
+
     override fun getAuthState(viewModelScope: CoroutineScope) = callbackFlow {
         val authStateListener = AuthStateListener { auth ->
             trySend(auth.currentUser)

@@ -217,15 +217,14 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier
                             )
                         }) { paddingValues ->
-                    if (multiplePermission.shouldShowRationale) {
-                        // Show a rationale if needed (optional)
-                        showRationalDialog.value = true
-                    } else {
-                        // Request the permission
-                        if(!multiplePermission.revokedPermissions.isEmpty())
-                        requestPermissionLauncher.launch(multiplePermission.revokedPermissions.first().permission)
-
-                    }
+                            if (multiplePermission.shouldShowRationale) {
+                                // Show a rationale if needed (optional)
+                                showRationalDialog.value = true
+                            } else {
+                                // Request the permission
+                                if(multiplePermission.revokedPermissions.isNotEmpty())
+                                    requestPermissionLauncher.launch(multiplePermission.revokedPermissions.first().permission)
+                            }
                         Box(
                             modifier = Modifier.padding(paddingValues)
                         ) {

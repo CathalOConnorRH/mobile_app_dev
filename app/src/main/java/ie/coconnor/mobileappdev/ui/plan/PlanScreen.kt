@@ -129,7 +129,7 @@ fun PlanScreen(
                     )
                 }
 
-            if (DataProvider.isAuthenticated) {
+            if (DataProvider.isAuthenticated && !DataProvider.isAnonymous) {
 
                 if(trips.isNullOrEmpty()) {
                     Column(
