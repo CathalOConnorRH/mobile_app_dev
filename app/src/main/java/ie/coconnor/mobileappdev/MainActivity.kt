@@ -1,14 +1,11 @@
 package ie.coconnor.mobileappdev
 
-//import com.google.firebase.firestore.FirebaseFirestore
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -28,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -41,15 +39,17 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 import ie.coconnor.mobileappdev.models.AuthState
 import ie.coconnor.mobileappdev.models.DataProvider
 import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
 import ie.coconnor.mobileappdev.models.locations.LocationsViewModel
 import ie.coconnor.mobileappdev.models.plan.PlanViewModel
+import ie.coconnor.mobileappdev.receiver.GeofenceBroadcastReceiver
 import ie.coconnor.mobileappdev.service.LocationForegroundService
 import ie.coconnor.mobileappdev.ui.login.LoginScreen
-import ie.coconnor.mobileappdev.ui.login.SignUpScreen
 import ie.coconnor.mobileappdev.ui.navigation.BottomBar
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.ui.plan.PlanScreen
@@ -60,12 +60,9 @@ import ie.coconnor.mobileappdev.ui.screens.locations.LocationsScreen
 import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
 import ie.coconnor.mobileappdev.utils.SharedPref
 import ie.coconnor.mobileappdev.utils.UIThemeController
+import timber.log.Timber
 import javax.inject.Inject
-import androidx.core.content.ContextCompat.startActivity
-import androidx.compose.ui.graphics.Color
-import com.google.android.gms.location.GeofencingClient
-import com.google.android.gms.location.LocationServices
-import ie.coconnor.mobileappdev.receiver.GeofenceBroadcastReceiver
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -102,11 +99,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+
         if (savedInstanceState != null) {
 
         }
 
+        Timber.tag(TAG).i("Creating geofence client")
         geofencingClient = LocationServices.getGeofencingClient(this)
+
         WindowCompat.setDecorFitsSystemWindows(window, true)
 //        window.setFlags(
 //            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -117,10 +120,8 @@ class MainActivity : ComponentActivity() {
         //createLocationRequest()
        // createGeofence()
 //        println(sharedPref.getDarkMode())
-        UIThemeController.updateUITheme(sharedPref.getDarkMode())
-
+//        UIThemeController.updateUITheme(sharedPref.getDarkMode())
         setContent {
-
             val isDarkMode by UIThemeController.isDarkMode.collectAsState()
             MobileAppDevTheme (darkTheme = isDarkMode){
 
@@ -130,9 +131,9 @@ class MainActivity : ComponentActivity() {
                 val currentUser = authViewModel.currentUser.collectAsState().value
                 DataProvider.updateAuthState(currentUser)
 
-                Log.i("AuthRepo", "Authenticated: ${DataProvider.isAuthenticated}")
-                Log.i("AuthRepo", "Anonymous: ${DataProvider.isAnonymous}")
-                Log.i("AuthRepo", "User: ${DataProvider.user}")
+                Timber.tag(TAG).i("Authenticated: ${DataProvider.isAuthenticated}")
+                Timber.tag(TAG).i( "Anonymous: ${DataProvider.isAnonymous}")
+                Timber.tag(TAG).i("User: ${DataProvider.user}")
 
                 val multiplePermission = rememberMultiplePermissionsState(
                     permissions = listOf(
@@ -140,10 +141,9 @@ class MainActivity : ComponentActivity() {
                         android.Manifest.permission.ACCESS_COARSE_LOCATION,
                         android.Manifest.permission.ACCESS_FINE_LOCATION,
                         android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
-
                     )
                 )
-                val context = LocalContext.current
+
                 val showRationalDialog = remember { mutableStateOf(false) }
 
                 val requestPermissionLauncher = rememberLauncherForActivityResult(
@@ -157,6 +157,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 if (showRationalDialog.value) {
+                    Timber.tag(TAG).i("Requesting Permission for ${multiplePermission.revokedPermissions.toString()}")
                     AlertDialog(
                         onDismissRequest = {
                             showRationalDialog.value = false
@@ -452,6 +453,9 @@ class MainActivity : ComponentActivity() {
         val serviceIntent = Intent(this, LocationForegroundService::class.java)
         stopService(serviceIntent)
     }
+    companion object {
+        private const val TAG = "MainActivity"
+    }
 }
 
 
@@ -471,9 +475,6 @@ fun NavigationGraph(navController: NavHostController,
     NavHost(navController, startDestination = startDestination) {
         composable(Destinations.LoginScreen.route) {
             LoginScreen( authViewModel)
-        }
-        composable(Destinations.Favourite.route) {
-            SignUpScreen(navController)
         }
         composable(Destinations.LocationsScreen.route) {
             LocationsScreen(tourViewModel, navController , sharedPref)
@@ -508,3 +509,4 @@ fun MobileAppDevPreview() {
 
     }
 }
+

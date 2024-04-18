@@ -127,6 +127,6 @@ dependencies {
     implementation ("com.squareup.moshi:moshi:1.14.0")
     implementation ("com.squareup.moshi:moshi-kotlin:1.14.0")
 
-    implementation("io.klogging:klogging-jvm:0.5.11")
+    implementation ("com.jakewharton.timber:timber:5.0.1")
 
 }

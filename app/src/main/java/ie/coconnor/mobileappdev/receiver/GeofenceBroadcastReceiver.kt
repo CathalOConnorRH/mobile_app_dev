@@ -19,11 +19,10 @@ import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
 import ie.coconnor.mobileappdev.MainActivity
 import ie.coconnor.mobileappdev.R
+import ie.coconnor.mobileappdev.models.plan.PlanViewModel
+import timber.log.Timber
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
-
-    private val TAG = "Broadcast =>"
-    private val CHANNEL_ID = "Geofence Channel"
 
     override fun onReceive(context: Context?, intent: Intent?) {
         //Added Notification
@@ -31,7 +30,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         if (geofencingEvent?.hasError() == true) {
             val errorMessage = GeofenceStatusCodes
                 .getStatusCodeString(geofencingEvent.errorCode)
-            Log.e(TAG, errorMessage)
+            Timber.tag(TAG).e( errorMessage)
             return
         }
         // Get the transition type.
@@ -49,7 +48,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                 sendNotification(context!!, "Exit")
             }
             else -> {
-                Log.e(TAG, "Error in setting up the geofence")
+                Timber.tag(TAG).i("Error in setting up the geofence")
             }
         }
     }
@@ -101,6 +100,12 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             .build()
 
         notificationManager.notify(1234, notification)
+
+    }
+
+    companion object {
+        private const val TAG = "GeofenceBroadcastReciever"
+        private const val CHANNEL_ID = "Geofence Channel"
 
     }
 }

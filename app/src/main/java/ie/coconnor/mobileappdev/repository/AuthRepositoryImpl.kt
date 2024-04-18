@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -38,7 +39,7 @@ class AuthRepositoryImpl @Inject constructor(
     override fun getAuthState(viewModelScope: CoroutineScope) = callbackFlow {
         val authStateListener = AuthStateListener { auth ->
             trySend(auth.currentUser)
-            Log.i(TAG, "User: ${auth.currentUser?.uid ?: "Not authenticated"}")
+            Timber.tag(TAG).i("User: ${auth.currentUser?.uid ?: "Not authenticated"}")
         }
         auth.addAuthStateListener(authStateListener)
         awaitClose {
@@ -50,11 +51,11 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val authResult = auth.signInAnonymously().await()
             authResult?.user?.let { user ->
-                Log.i(TAG, "FirebaseAuthSuccess: Anonymous UID: ${user.uid}")
+                Timber.tag(TAG).i("FirebaseAuthSuccess: Anonymous UID: ${user.uid}")
             }
             Response.Success(authResult)
         } catch (error: Exception) {
-            Log.e(TAG, "FirebaseAuthError: Failed to Sign in anonymously")
+            Timber.tag(TAG).e("FirebaseAuthError: Failed to Sign in anonymously")
             Response.Failure(error)
         }
     }
@@ -90,7 +91,7 @@ class AuthRepositoryImpl @Inject constructor(
     private suspend fun authSignIn(credential: AuthCredential): FirebaseSignInResponse {
         return try {
             val authResult = auth.signInWithCredential(credential).await()
-            Log.i(TAG, "User: ${authResult?.user?.uid}")
+            Timber.tag(TAG).i( "User: ${authResult?.user?.uid}")
             DataProvider.updateAuthState(authResult?.user)
             Response.Success(authResult)
         }
@@ -102,7 +103,7 @@ class AuthRepositoryImpl @Inject constructor(
     private suspend fun authLink(credential: AuthCredential): FirebaseSignInResponse {
         return try {
             val authResult = auth.currentUser?.linkWithCredential(credential)?.await()
-            Log.i(TAG, "User: ${authResult?.user?.uid}")
+            Timber.tag(TAG).i( "User: ${authResult?.user?.uid}")
             DataProvider.updateAuthState(authResult?.user)
             Response.Success(authResult)
         }
@@ -110,7 +111,7 @@ class AuthRepositoryImpl @Inject constructor(
             when (error.errorCode) {
                 Constants.AuthErrors.CREDENTIAL_ALREADY_IN_USE,
                 Constants.AuthErrors.EMAIL_ALREADY_IN_USE -> {
-                    Log.e(TAG, "FirebaseAuthError: authLink(credential:) failed, ${error.message}")
+                    Timber.tag(TAG).e("FirebaseAuthError: authLink(credential:) failed, ${error.message}")
                     return authSignIn(credential)
                 }
             }

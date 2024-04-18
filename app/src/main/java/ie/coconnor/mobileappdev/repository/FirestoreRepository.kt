@@ -7,6 +7,7 @@ import ie.coconnor.mobileappdev.models.Constants
 import ie.coconnor.mobileappdev.models.DataProvider
 import ie.coconnor.mobileappdev.models.Location
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 
 class FirestoreRepository {
     suspend fun getTrips(): List<Trip> {
@@ -15,7 +16,7 @@ class FirestoreRepository {
                 .get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
-                        Log.d("TAG", "Trips recevied => ${document.toString()}")
+                        Timber.tag(TAG).i( "Trips recevied => ${document.toString()}")
                     }
                 }
                 .addOnFailureListener { e ->
@@ -32,8 +33,8 @@ class FirestoreRepository {
 
         var trips = Constants.db.collection("trips").document(documentName)
             .update("locations", FieldValue.arrayUnion(tripName))
-            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }.await()
+            .addOnSuccessListener { Timber.tag(TAG).d("DocumentSnapshot successfully written!") }
+            .addOnFailureListener { e -> Timber.tag(TAG).e( "Error writing document $e") }.await()
         return trips.toString()
         return ""
     }
@@ -46,8 +47,8 @@ class FirestoreRepository {
 
         var trips = Constants.db.collection("trips").document(documentName)
             .set(tripName)
-            .addOnSuccessListener { Log.d(TAG, "Document ${documentName} successfully written!") }
-            .addOnFailureListener { e -> Log.w(TAG, "Error writing document ${documentName}", e) }.await()
+            .addOnSuccessListener { Timber.tag(TAG).d( "Document $documentName successfully written!") }
+            .addOnFailureListener { e -> Timber.tag(TAG).e("Error writing document $documentName $e") }.await()
         return trips.toString()
     }
     companion object {

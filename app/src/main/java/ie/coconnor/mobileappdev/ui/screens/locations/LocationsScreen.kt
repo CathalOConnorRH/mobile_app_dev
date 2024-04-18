@@ -92,7 +92,7 @@ fun LocationsScreen(viewModel: LocationsViewModel,
 
     LaunchedEffect(Unit) {
         viewModel.fetchTours(location, tripAdvisorApiKey)
-        viewModel.fetchTrips()
+//        viewModel.fetchTrips()
     }
     Scaffold(
         floatingActionButton = {

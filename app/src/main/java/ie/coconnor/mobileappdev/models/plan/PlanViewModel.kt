@@ -6,9 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ie.coconnor.mobileappdev.models.Location
+import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
 import ie.coconnor.mobileappdev.repository.FirestoreRepository
 import ie.coconnor.mobileappdev.repository.Trip
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class PlanViewModel: ViewModel()  {
 
@@ -21,11 +23,10 @@ class PlanViewModel: ViewModel()  {
     fun createTrip(tripName: Location, documentName: String){
         viewModelScope.launch {
             try {
-                Log.i("PlanViewModel", tripName.toString())
+                Timber.tag(TAG).i( tripName.toString())
                 val cards = repository.createTrip(tripName, documentName)
-                println(cards.toString())
             } catch (e: Exception){
-                Log.e("PlanViewModel", e.message.toString());
+                Timber.tag(TAG).i( e.message.toString());
             }
         }
     }
@@ -34,13 +35,16 @@ class PlanViewModel: ViewModel()  {
         viewModelScope.launch {
             try {
                 val cards = repository.getTrips()
-                println(cards.toString())
                 _trips.value = cards
-                Log.e("PlanViewModel", _trips.value.toString())
+                Timber.tag(TAG).i(_trips.value.toString())
             } catch (e: Exception) {
                 // Handle error
-                Log.e("PlanViewModel", e.message.toString());
+                Timber.tag(TAG).e( e.message.toString());
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "PlanViewModel"
     }
 }

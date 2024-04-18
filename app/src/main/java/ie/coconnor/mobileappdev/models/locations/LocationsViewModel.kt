@@ -11,6 +11,7 @@ import ie.coconnor.mobileappdev.repository.FirestoreRepository
 import ie.coconnor.mobileappdev.repository.LocationsRepository
 import ie.coconnor.mobileappdev.repository.Trip
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class LocationsViewModel() : ViewModel() {
 
@@ -31,10 +32,10 @@ class LocationsViewModel() : ViewModel() {
                 val cards = repository.getLocations(tripAdvisorApiKey, location, category)
                 println(cards.data.toString())
                 _locations.value = cards
-                Log.e("TourViewModel", _locations.value.toString())
+                Timber.tag(TAG).i(_locations.value.toString())
             } catch (e: Exception) {
                 // Handle error
-                Log.e("TourViewModel", e.message.toString());
+                Timber.tag(TAG).e( e.message.toString());
             }
         }
     }
@@ -45,23 +46,25 @@ class LocationsViewModel() : ViewModel() {
                 val cards = fireStoreRepository.getTrips()
                 println(cards.toString())
                 _trips.value = cards
-                Log.e("TourViewModel", _trips.value.toString())
+                Timber.tag(TAG).i( _trips.value.toString())
             } catch (e: Exception) {
                 // Handle error
-                Log.e("TourViewModel", e.message.toString());
+                Timber.tag(TAG).e( e.message.toString());
             }
         }
     }
     fun createOrUpdateTrip(location: Location, documentName: String){
         viewModelScope.launch {
             try {
-                Log.i("PlanViewModel", location.toString())
+                Timber.tag(TAG).i( location.toString())
                 val cards = fireStoreRepository.createTrip(location, documentName)
-                println(cards.toString())
             } catch (e: Exception){
-                Log.e("PlanViewModel", e.message.toString());
+                Timber.tag(TAG).e( e.message.toString());
             }
         }
+    }
+    companion object {
+        private const val TAG = "LocationsViewModel"
     }
 
 }

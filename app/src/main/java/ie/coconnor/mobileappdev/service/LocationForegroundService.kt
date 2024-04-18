@@ -19,6 +19,8 @@ import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.*
 import ie.coconnor.mobileappdev.MainActivity
 import ie.coconnor.mobileappdev.R
+import ie.coconnor.mobileappdev.repository.FirestoreRepository
+import timber.log.Timber
 
 class LocationForegroundService : Service() {
 
@@ -90,7 +92,7 @@ class LocationForegroundService : Service() {
         ) {
             return
         }
-        Log.e("Location","asked for location")
+        Timber.tag(TAG).d("asked for location")
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 
@@ -124,6 +126,11 @@ class LocationForegroundService : Service() {
      */
     fun stopForegroundService() {
         stopSelf()
+    }
+
+    companion object {
+        private const val TAG = "LocationForegroundService"
+
     }
 
 }

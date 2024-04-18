@@ -1,4 +1,4 @@
-package ie.coconnor.mobileappdev.ui.screens
+package ie.coconnor.mobileappdev.ui.component
 
 // CardList.kt
 import androidx.compose.foundation.layout.Column
