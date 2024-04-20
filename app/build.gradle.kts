@@ -118,7 +118,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.10.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.10.0")
 
-    implementation ("androidx.compose.runtime:runtime-livedata:1.6.3")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.6")
     implementation ("com.google.android.gms:play-services-maps:18.1.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
     implementation ("com.google.maps.android:maps-compose:4.3.3")
