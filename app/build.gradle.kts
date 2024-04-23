@@ -125,7 +125,7 @@ dependencies {
     implementation ("com.google.maps.android:maps-ktx:5.0.0")
 
     implementation ("com.squareup.moshi:moshi:1.15.1")
-    implementation ("com.squareup.moshi:moshi-kotlin:1.14.0")
+    implementation ("com.squareup.moshi:moshi-kotlin:1.15.1")
 
     implementation ("com.jakewharton.timber:timber:5.0.1")
 
