@@ -41,4 +41,16 @@ object DataProvider {
             AuthState.SignedOut
         }
     }
+
+    fun getDisplayName(user: FirebaseUser?): String{
+        this.user = user
+        val displayName = user!!.displayName
+        return displayName.toString()
+    }
+
+    fun getProfilePhoto(user: FirebaseUser?): String{
+        this.user = user
+        val photoUrl = user!!.photoUrl
+        return photoUrl.toString().replace("s96", "s250")
+    }
 }

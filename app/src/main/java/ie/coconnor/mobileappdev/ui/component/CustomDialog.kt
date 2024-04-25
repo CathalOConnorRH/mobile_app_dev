@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
 @Composable
-fun CustomDialog(value: String, title: String, setShowDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
+fun CustomDialog(value: String, title: String, textField: String, setShowDialog: (Boolean) -> Unit, setValue: (String) -> Unit) {
 
     val txtFieldError = remember { mutableStateOf("") }
     val txtField = remember { mutableStateOf(value) }
@@ -108,7 +108,7 @@ fun CustomDialog(value: String, title: String, setShowDialog: (Boolean) -> Unit,
                                     .height(20.dp)
                             )
                         },
-                        placeholder = { Text(text = "Enter value") },
+                        placeholder = { Text(text = textField) },
                         value = txtField.value,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         onValueChange = {

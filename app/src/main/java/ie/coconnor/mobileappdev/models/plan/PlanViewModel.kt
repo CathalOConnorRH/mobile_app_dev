@@ -1,6 +1,5 @@
 package ie.coconnor.mobileappdev.models.plan
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +8,7 @@ import ie.coconnor.mobileappdev.models.Location
 import ie.coconnor.mobileappdev.repository.FirestoreRepository
 import ie.coconnor.mobileappdev.repository.Trip
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class PlanViewModel: ViewModel()  {
 
@@ -18,14 +18,13 @@ class PlanViewModel: ViewModel()  {
 
     val trips: LiveData<List<Trip>> = _trips
 
-    fun createOrUpdateTrip(tripName: Location){
+    fun createTrip( location: Location){
         viewModelScope.launch {
             try {
-                Log.i("PlanViewModel", tripName.toString())
-                val cards = repository.createOrUpdateTrip(tripName)
-                println(cards.toString())
+                Timber.tag(TAG).i( location.location_id)
+                repository.createTrip(location)
             } catch (e: Exception){
-                Log.e("PlanViewModel", e.message.toString());
+                Timber.tag(TAG).i( e.message.toString());
             }
         }
     }
@@ -34,13 +33,16 @@ class PlanViewModel: ViewModel()  {
         viewModelScope.launch {
             try {
                 val cards = repository.getTrips()
-                println(cards.toString())
                 _trips.value = cards
-                Log.e("PlanViewModel", _trips.value.toString())
+                Timber.tag(TAG).i(_trips.value.toString())
             } catch (e: Exception) {
                 // Handle error
-                Log.e("PlanViewModel", e.message.toString());
+                Timber.tag(TAG).e( e.message.toString());
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "PlanViewModel"
     }
 }

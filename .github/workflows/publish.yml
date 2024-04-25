@@ -8,7 +8,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         # 1
-        - uses: dawidd6/action-download-artifact@v2
+        - uses: dawidd6/action-download-artifact@v3
           with:
             github_token: ${{secrets.GITHUB_TOKEN}}
             workflow: build.yml
@@ -24,7 +24,7 @@ jobs:
             echo "::set-output name=release_tag::APP_$(date +"%Y.%m.%d_%H-%M")"
         # 3
         - name: Release
-          uses: softprops/action-gh-release@v1
+          uses: softprops/action-gh-release@v2
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:

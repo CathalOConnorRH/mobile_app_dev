@@ -9,6 +9,21 @@ plugins {
     alias(libs.plugins.googleAndroidLibrariesMapsplatformSecretsGradlePlugin)
 }
 
+secrets {
+    // Optionally specify a different file name containing your secrets.
+    // The plugin defaults to "local.properties"
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. This file can be
+    // checked in version control.
+    defaultPropertiesFileName = "local.defaults.properties"
+
+    // Configure which keys should be ignored by the plugin by providing regular expressions.
+    // "sdk.dir" is ignored by default.
+    ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
+}
+
 android {
     namespace = "ie.coconnor.mobileappdev"
     compileSdk = 34
@@ -63,7 +78,7 @@ android {
         viewBinding = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.12"
     }
     packaging {
         resources {
@@ -101,32 +116,32 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     // Splash API
     implementation ("androidx.core:core-splashscreen:1.0.1")
-    implementation("com.google.android.gms:play-services-auth:20.5.0")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0")
-    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
-    implementation ("androidx.navigation:navigation-compose:2.5.3")
-    implementation ("io.coil-kt:coil-compose:2.2.2")
-    implementation ("androidx.compose.material:material-icons-extended:1.6.3")
-    implementation ("androidx.appcompat:appcompat:1.2.0")
-    implementation ("com.firebaseui:firebase-ui-auth:7.2.0")
+    implementation("com.google.android.gms:play-services-auth:21.1.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation ("androidx.navigation:navigation-compose:2.7.7")
+    implementation ("io.coil-kt:coil-compose:2.6.0")
+    implementation ("androidx.compose.material:material-icons-extended:1.6.6")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
+    implementation ("com.firebaseui:firebase-ui-auth:8.0.2")
 
-    implementation("com.google.dagger:hilt-android:2.51")
-    kapt("com.google.dagger:hilt-android-compiler:2.51")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // Retrofit for network requests
-    implementation ("com.squareup.retrofit2:retrofit:2.10.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.10.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
 
-    implementation ("androidx.compose.runtime:runtime-livedata:1.6.3")
-    implementation ("com.google.android.gms:play-services-maps:18.1.0")
-    implementation ("com.google.android.gms:play-services-location:21.0.1")
-    implementation ("com.google.maps.android:maps-compose:4.3.3")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.6")
+    implementation ("com.google.android.gms:play-services-maps:18.2.0")
+    implementation ("com.google.android.gms:play-services-location:21.2.0")
+    implementation ("com.google.maps.android:maps-compose:4.4.1")
     implementation ("com.google.maps.android:maps-ktx:5.0.0")
 
-    implementation ("com.squareup.moshi:moshi:1.14.0")
-    implementation ("com.squareup.moshi:moshi-kotlin:1.14.0")
+    implementation ("com.squareup.moshi:moshi:1.15.1")
+    implementation ("com.squareup.moshi:moshi-kotlin:1.15.1")
 
-    implementation("io.klogging:klogging-jvm:0.5.11")
+    implementation ("com.jakewharton.timber:timber:5.0.1")
 
 }

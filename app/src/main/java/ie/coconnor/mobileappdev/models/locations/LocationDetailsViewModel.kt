@@ -1,16 +1,14 @@
 package ie.coconnor.mobileappdev.models.locations
 
-import android.content.res.Resources
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.LocationDetails
 import ie.coconnor.mobileappdev.repository.LocationsRepository
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import timber.log.Timber
 
 class LocationDetailsViewModel(): ViewModel() {
     private val repository = LocationsRepository()
@@ -22,17 +20,20 @@ class LocationDetailsViewModel(): ViewModel() {
         viewModelScope.launch {
             try {
                 val details = repository.getLocationDetails(location_id, tripAdvisorApiKey)
-                println("location " + details.description.toString())
                 _locationDetails.value = details
-//                Log.e("TourViewModel", _locationDetails.value.toString()
+                Timber.tag(TAG).i( _locationDetails.value.toString())
             } catch (http: HttpException) {
-                Log.e("TourViewModel", http.response().toString())
+                Timber.tag(TAG).e( http.response().toString())
             } catch (e: Exception) {
                 // Handle error
-                Log.e("TourViewModel", e.cause.toString());
-                Log.e("TourViewModel", e.message.toString());
-                Log.e("TourViewModel", e.stackTrace.contentToString());
+                Timber.tag(TAG).e( e.cause.toString());
+                Timber.tag(TAG).e( e.message.toString());
+                Timber.tag(TAG).e( e.stackTrace.contentToString());
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "LocationDetailsViewModel"
     }
 }

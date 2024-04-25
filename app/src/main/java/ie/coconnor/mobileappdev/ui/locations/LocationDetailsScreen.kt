@@ -1,40 +1,32 @@
-package ie.coconnor.mobileappdev.ui.screens.locations
+package ie.coconnor.mobileappdev.ui.locations
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.Alignment
-import androidx.compose.foundation.layout.Row
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.shape
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,41 +39,30 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.wear.compose.material.ContentAlpha
 import androidx.wear.compose.material.LocalContentAlpha
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.request.CachePolicy
-import coil.request.ImageRequest
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
 import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.Location
 import ie.coconnor.mobileappdev.models.LocationDetails
 import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
 import ie.coconnor.mobileappdev.ui.component.UserRatingBar
-import ie.coconnor.mobileappdev.utils.SharedPref
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LocationDetailsScreen(
     navController: NavHostController,
     viewModel: LocationDetailsViewModel,
-    sharedPref: SharedPref
+    location: String?
 ) {
     val locationDetails by viewModel.locationDetails.observeAsState()
-
     val context = LocalContext.current
     val tripAdvisorApiKey = context.getString(R.string.tripadvisor)
     LaunchedEffect(Unit) {
-        val location_id = sharedPref.getLocationId()
-//        locationImageUrl = sharedPref.getLocationImageUrl()
-        println(location_id)
-        viewModel.fetchLocationDetails(location_id, tripAdvisorApiKey)
+        if (location != null) {
+            viewModel.fetchLocationDetails(location, tripAdvisorApiKey)
+        }
     }
 
     Scaffold(
@@ -143,23 +124,6 @@ fun LocationDetailsDisplay(
 
                 }
             }
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(placeholder)
-                    .crossfade(true)
-                    .error(placeholder)
-                    .fallback(placeholder)
-                    .diskCachePolicy(CachePolicy.ENABLED)
-                    .memoryCachePolicy(CachePolicy.ENABLED)
-                    .build(),
-                placeholder = painterResource(placeholder),
-                contentDescription = "",
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .background(color = MaterialTheme.colorScheme.secondary)
-                    .fillMaxWidth()
-                    .height(250.dp)
-            )
             Row(Modifier.padding(start = 16.dp, end = 24.dp, top = 16.dp)) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
@@ -187,14 +151,17 @@ fun LocationDetailsDisplay(
                     fontSize = 10.sp
                 )
             }
-            val locationOnMap = LatLng(locationDetails!!.latitude?.toDoubleOrNull()!!, locationDetails!!.longitude?.toDoubleOrNull()!!)
 
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(locationOnMap, 10f)
-            }
+
+            val locationOnMap = LatLng(locationDetails!!.latitude?.toDoubleOrNull()!!, locationDetails!!.longitude?.toDoubleOrNull()!!)
+            println(locationOnMap.toString())
+//            val cameraPositionState = rememberCameraPositionState {
+//                position = CameraPosition.fromLatLngZoom(locationOnMap, 10f)
+//            }
             GoogleMap(
                 modifier = Modifier.fillMaxWidth(),
-                cameraPositionState = cameraPositionState) {
+//                cameraPositionState = cameraPositionState
+            ) {
                 Marker(
                     state = MarkerState(position = locationOnMap),
                     title = locationDetails!!.name,

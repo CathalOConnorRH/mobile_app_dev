@@ -12,13 +12,15 @@ class LocationsRepository {
     suspend fun getLocations(apiKey: String, searchQuery: String, category: String): LocationResponse {
 
         var locations = locationsService.getLocations(apiKey,searchQuery,category)
-        if(!locations.data.isEmpty()){
+        if(locations.data.isNotEmpty()){
             locations.data.forEach {
-                var photos = it.location_id?.let { it1 -> getLocationPhotos(it1, apiKey) }
-                it.imageUrl= photos?.data?.get(0)?.images?.medium?.url.toString()
-
+//                var photos = it.location_id?.let { it1 -> getLocationPhotos(it1, apiKey) }
+//                it.imageUrl= photos?.data?.get(0)?.images?.medium?.url.toString()
+//
                 var details = it.location_id?.let { it1 -> getLocationDetails(it1, apiKey) }
                 it.url = details?.web_url
+                it.latitude = details?.latitude
+                it.longitude = details?.longitude
             }
         }
         return locations

@@ -1,6 +1,5 @@
 package ie.coconnor.mobileappdev.models.locations
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +10,7 @@ import ie.coconnor.mobileappdev.repository.FirestoreRepository
 import ie.coconnor.mobileappdev.repository.LocationsRepository
 import ie.coconnor.mobileappdev.repository.Trip
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class LocationsViewModel() : ViewModel() {
 
@@ -31,10 +31,10 @@ class LocationsViewModel() : ViewModel() {
                 val cards = repository.getLocations(tripAdvisorApiKey, location, category)
                 println(cards.data.toString())
                 _locations.value = cards
-                Log.e("TourViewModel", _locations.value.toString())
+                Timber.tag(TAG).i(_locations.value.toString())
             } catch (e: Exception) {
                 // Handle error
-                Log.e("TourViewModel", e.message.toString());
+                Timber.tag(TAG).e( e.message.toString());
             }
         }
     }
@@ -42,26 +42,43 @@ class LocationsViewModel() : ViewModel() {
     fun fetchTrips(){
         viewModelScope.launch {
             try {
-                val cards = fireStoreRepository.getTrips()
-                println(cards.toString())
-                _trips.value = cards
-                Log.e("TourViewModel", _trips.value.toString())
+                val trips = fireStoreRepository.getTrips()
+                println(trips.toString())
+                _trips.value = trips
+                Timber.tag(TAG).i( _trips.value.toString())
             } catch (e: Exception) {
                 // Handle error
-                Log.e("TourViewModel", e.message.toString());
+                Timber.tag(TAG).e( e.message.toString());
             }
         }
     }
-    fun createOrUpdateTrip(location: Location){
+    fun updateTrip(location: Location, documentName: String): Boolean{
+        var saved: Boolean = false
         viewModelScope.launch {
             try {
-                Log.i("PlanViewModel", location.toString())
-                val cards = fireStoreRepository.createOrUpdateTrip(location)
-                println(cards.toString())
+                Timber.tag(TAG).i( location.name)
+                val cards = fireStoreRepository.updateTrip(location, documentName)
+                saved = true
             } catch (e: Exception){
-                Log.e("PlanViewModel", e.message.toString());
+                Timber.tag(TAG).e( e.message.toString());
+            }
+            return@launch
+        }
+        return saved
+    }
+
+    fun createTrip(location: Location){
+        viewModelScope.launch {
+            try {
+                Timber.tag(TAG).i( location.location_id)
+                fireStoreRepository.createTrip(location)
+            } catch (e: Exception){
+                Timber.tag(TAG).e( e.message.toString());
             }
         }
+    }
+    companion object {
+        private const val TAG = "LocationsViewModel"
     }
 
 }

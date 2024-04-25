@@ -79,7 +79,6 @@ fun LoginScreen(
 
     MobileAppDevTheme {
         Scaffold(
-//            containerColor = MaterialTheme.colorScheme.primary
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -90,18 +89,7 @@ fun LoginScreen(
                 Arrangement.spacedBy(8.dp),
                 Alignment.CenterHorizontally
             ) {
-//                Image(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(16.dp)
-//                        .weight(1f),
-//                    painter = painterResource(R.drawable.vector),
-//                    contentDescription = "app_logo",
-//                    contentScale = ContentScale.Fit,
-////                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.tertiary)
-//                )
-                val drawableResource = R.drawable.vector//if (dar) R.drawable.xxx else R.drawable.xxx
-
+                val drawableResource = R.drawable.vector
                 Image(
                     painter = painterResource(id = drawableResource),
                     contentDescription = "Logo",
@@ -111,43 +99,6 @@ fun LoginScreen(
                         .weight(1f)
                 )
                 if (DataProvider.authState == AuthState.SignedOut || DataProvider.isAnonymous) {
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(paddingValues),
-                        verticalAlignment = Alignment.Bottom,
-
-                        ) {
-                        var text by rememberSaveable { mutableStateOf("") }
-
-                        OutlinedTextField(
-                            modifier = Modifier.weight(1f),
-                            value = text,
-                            onValueChange = { text = it },
-                            label = { Text("Username") }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        OutlinedTextField(
-                            modifier = Modifier.weight(1f),
-                            value = text,
-                            onValueChange = { text = it },
-                            label = { Text("Password")},
-                            visualTransformation = PasswordVisualTransformation(),
-                        )
-                    }
-                    Row(
-                        modifier = Modifier,
-                        verticalAlignment = Alignment.Bottom,
-                    ) {
-                        ElevatedButton(
-                            onClick = {
-
-                            }
-                        ) {
-                            Text(text = "Create Account")
-                        }
-                    }
                     Button(
                         onClick = {
                             authViewModel.oneTapSignIn()
@@ -157,9 +108,6 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         shape = RoundedCornerShape(10.dp),
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = Color.White
-//                    )
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_google_logo),
@@ -196,9 +144,6 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         shape = RoundedCornerShape(10.dp),
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = Color.White
-//                    )
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_google_logo),
@@ -207,7 +152,6 @@ fun LoginScreen(
                         Text(
                             text = "Sign Out",
                             modifier = Modifier.padding(6.dp),
-//                        color = Color.Black.copy(alpha = 0.5f)
                         )
                     }
                 }
@@ -234,7 +178,7 @@ fun LoginScreen(
 @Preview
 @Composable
 fun LoginScreenPreview() {
-   // MobileAppDevTheme {
+//    MobileAppDevTheme {
 //    LoginScreen(LoginScreen)
-    //}
+//    }
 }

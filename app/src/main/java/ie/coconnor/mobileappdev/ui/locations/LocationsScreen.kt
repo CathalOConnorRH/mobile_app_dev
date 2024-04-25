@@ -1,4 +1,4 @@
-package ie.coconnor.mobileappdev.ui.screens.locations
+package ie.coconnor.mobileappdev.ui.locations
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
@@ -54,8 +55,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
@@ -83,16 +82,18 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                     sharedPref: SharedPref)
 {
     val locations by viewModel.locations.observeAsState()
-    val trips by viewModel.trips.observeAsState()
+//    val trips by viewModel.trips.observeAsState()
 
     var location by remember { mutableStateOf("Waterford, Ireland") }
+//    var tripName by remember { mutableStateOf("") }
+
     var showDialog by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
     val tripAdvisorApiKey = context.getString(R.string.tripadvisor)
 
     LaunchedEffect(Unit) {
         viewModel.fetchTours(location, tripAdvisorApiKey)
-        viewModel.fetchTrips()
     }
     Scaffold(
         floatingActionButton = {
@@ -117,7 +118,7 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                         onDismissRequest = {
                             showDialog = false
                         },
-                        title = { Text("Enter Text") },
+                        title = { Text("Search new destination") },
                         text = {
                             TextField(
                                 value = location,
@@ -149,11 +150,11 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                         }
                     )
                 }
-                // Display the list of credit cards
+
+                // Display the list of Locations
                     LazyColumn {
                         locations?.let {
                             items(it.data) { location ->
-                                //Text(text = tour.name)
                                 StandardLocationCard(
                                     location = location,
                                     navController = navController,
@@ -168,12 +169,13 @@ fun LocationsScreen(viewModel: LocationsViewModel,
     }
 }
 
-@Preview(group = "Locations")
-@Composable
-fun PreviewStandCardItem(
-    @PreviewParameter(SampleLocationProvider::class) location: Location){
-    StandardLocationCard(location = location)
-}
+//@Preview(group = "Locations")
+//@Composable
+//fun PreviewStandCardItem(
+//    @PreviewParameter(SampleLocationProvider::class) location: Location,
+//){
+//    StandardLocationCard(location = location, trips = trips)
+//}
 
 @Composable
 fun StandardLocationCard(
@@ -186,10 +188,9 @@ fun StandardLocationCard(
     navController: NavController = rememberNavController(),
     sharedPref: SharedPref? = null,
     viewModel: LocationsViewModel = hiltViewModel()
-
-) {
+    ) {
     val placeholder = R.drawable.vector
-
+    val showTripDialog = false
     ElevatedCard(
         shape = shape,
         elevation = CardDefaults.cardElevation(
@@ -267,21 +268,22 @@ fun StandardLocationCard(
                     Row(modifier = Modifier.align(Alignment.CenterStart)) {
 
                         TextButton(onClick = {
-                            location.location_id?.let { sharedPref?.setLocationId(it) }
-                            navController.navigate(Destinations.LocationDetailsScreen.route)
+                            navController.navigate(Destinations.LocationDetailsScreen.route + "/${location.location_id}")
                         }) {
                             Text(text = "More Details")
                         }
                     }
-
                     Row(modifier = Modifier.align(Alignment.CenterEnd)) {
                         IconButton(onClick = {
-                            viewModel.createOrUpdateTrip(location)
-
-                            //viewModel.saveLocation(location)
+                            viewModel.createTrip(location)
+                            navController.navigate(Destinations.PlanScreen.route)
                         }) {
-
-                            Icon(Icons.Default.Favorite, contentDescription = null)
+                            val saved = false
+                            if(saved) {
+                                Icon(Icons.Default.Favorite, contentDescription = null)
+                            } else {
+                                Icon(Icons.Default.FavoriteBorder, contentDescription = null)
+                            }
                         }
 
                         val sendIntent = Intent(Intent.ACTION_SEND).apply {
@@ -294,7 +296,6 @@ fun StandardLocationCard(
 
                         IconButton(onClick = {
                             startActivity(context, shareIntent, null)
-
                         }) {
                             Icon(Icons.Default.Share, contentDescription = null)
                         }
@@ -304,20 +305,6 @@ fun StandardLocationCard(
         }
     }
 }
-
-@Composable
-fun SeachButton(onClick: () -> Unit) {
-    SmallFloatingActionButton(
-        onClick = { },
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.secondary,
-        shape = CircleShape,
-
-        ) {
-        Icon(Icons.Filled.Search, "Search new location.")
-    }
-}
-
 
 class SampleLocationProvider : PreviewParameterProvider<Location>{
     override val values = sequenceOf(
@@ -337,4 +324,5 @@ class SampleLocationProvider : PreviewParameterProvider<Location>{
             address_obj = Address("High Street", "", "", "", "", "", "Street 3")
         )
     )
+
 }

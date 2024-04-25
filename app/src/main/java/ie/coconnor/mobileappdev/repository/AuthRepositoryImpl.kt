@@ -1,12 +1,5 @@
 package ie.coconnor.mobileappdev.repository
 
-import android.util.Log
-import ie.coconnor.mobileappdev.models.Constants
-import ie.coconnor.mobileappdev.models.DataProvider
-import ie.coconnor.mobileappdev.models.FirebaseSignInResponse
-import ie.coconnor.mobileappdev.models.OneTapSignInResponse
-import ie.coconnor.mobileappdev.models.Response
-import ie.coconnor.mobileappdev.models.SignOutResponse
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
@@ -15,15 +8,24 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.GoogleAuthProvider
+import ie.coconnor.mobileappdev.models.Constants
+import ie.coconnor.mobileappdev.models.DataProvider
+import ie.coconnor.mobileappdev.models.FirebaseSignInResponse
+import ie.coconnor.mobileappdev.models.OneTapSignInResponse
+import ie.coconnor.mobileappdev.models.Response
+import ie.coconnor.mobileappdev.models.SignOutResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private var oneTapClient: SignInClient,
@@ -32,10 +34,11 @@ class AuthRepositoryImpl @Inject constructor(
     @Named(Constants.SIGN_UP_REQUEST)
     private var signUpRequest: BeginSignInRequest,
 ): AuthRepository {
+
     override fun getAuthState(viewModelScope: CoroutineScope) = callbackFlow {
         val authStateListener = AuthStateListener { auth ->
             trySend(auth.currentUser)
-            Log.i(TAG, "User: ${auth.currentUser?.uid ?: "Not authenticated"}")
+            Timber.tag(TAG).i("User: ${auth.currentUser?.uid ?: "Not authenticated"}")
         }
         auth.addAuthStateListener(authStateListener)
         awaitClose {
@@ -47,11 +50,11 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val authResult = auth.signInAnonymously().await()
             authResult?.user?.let { user ->
-                Log.i(TAG, "FirebaseAuthSuccess: Anonymous UID: ${user.uid}")
+                Timber.tag(TAG).i("FirebaseAuthSuccess: Anonymous UID: ${user.uid}")
             }
             Response.Success(authResult)
         } catch (error: Exception) {
-            Log.e(TAG, "FirebaseAuthError: Failed to Sign in anonymously")
+            Timber.tag(TAG).e("FirebaseAuthError: Failed to Sign in anonymously")
             Response.Failure(error)
         }
     }
@@ -87,7 +90,7 @@ class AuthRepositoryImpl @Inject constructor(
     private suspend fun authSignIn(credential: AuthCredential): FirebaseSignInResponse {
         return try {
             val authResult = auth.signInWithCredential(credential).await()
-            Log.i(TAG, "User: ${authResult?.user?.uid}")
+            Timber.tag(TAG).i( "User: ${authResult?.user?.uid}")
             DataProvider.updateAuthState(authResult?.user)
             Response.Success(authResult)
         }
@@ -99,7 +102,7 @@ class AuthRepositoryImpl @Inject constructor(
     private suspend fun authLink(credential: AuthCredential): FirebaseSignInResponse {
         return try {
             val authResult = auth.currentUser?.linkWithCredential(credential)?.await()
-            Log.i(TAG, "User: ${authResult?.user?.uid}")
+            Timber.tag(TAG).i( "User: ${authResult?.user?.uid}")
             DataProvider.updateAuthState(authResult?.user)
             Response.Success(authResult)
         }
@@ -107,7 +110,7 @@ class AuthRepositoryImpl @Inject constructor(
             when (error.errorCode) {
                 Constants.AuthErrors.CREDENTIAL_ALREADY_IN_USE,
                 Constants.AuthErrors.EMAIL_ALREADY_IN_USE -> {
-                    Log.e(TAG, "FirebaseAuthError: authLink(credential:) failed, ${error.message}")
+                    Timber.tag(TAG).e("FirebaseAuthError: authLink(credential:) failed, ${error.message}")
                     return authSignIn(credential)
                 }
             }
