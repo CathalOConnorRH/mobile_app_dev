@@ -123,7 +123,7 @@ dependencies {
     implementation ("io.coil-kt:coil-compose:2.2.2")
     implementation ("androidx.compose.material:material-icons-extended:1.6.6")
     implementation ("androidx.appcompat:appcompat:1.6.1")
-    implementation ("com.firebaseui:firebase-ui-auth:7.2.0")
+    implementation ("com.firebaseui:firebase-ui-auth:8.0.2")
 
     implementation("com.google.dagger:hilt-android:2.51.1")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
