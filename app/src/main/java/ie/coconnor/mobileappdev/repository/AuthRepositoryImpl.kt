@@ -1,12 +1,5 @@
 package ie.coconnor.mobileappdev.repository
 
-import android.util.Log
-import ie.coconnor.mobileappdev.models.Constants
-import ie.coconnor.mobileappdev.models.DataProvider
-import ie.coconnor.mobileappdev.models.FirebaseSignInResponse
-import ie.coconnor.mobileappdev.models.OneTapSignInResponse
-import ie.coconnor.mobileappdev.models.Response
-import ie.coconnor.mobileappdev.models.SignOutResponse
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
@@ -15,6 +8,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.GoogleAuthProvider
+import ie.coconnor.mobileappdev.models.Constants
+import ie.coconnor.mobileappdev.models.DataProvider
+import ie.coconnor.mobileappdev.models.FirebaseSignInResponse
+import ie.coconnor.mobileappdev.models.OneTapSignInResponse
+import ie.coconnor.mobileappdev.models.Response
+import ie.coconnor.mobileappdev.models.SignOutResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.SharingStarted

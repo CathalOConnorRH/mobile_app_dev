@@ -1,6 +1,5 @@
 package ie.coconnor.mobileappdev.models.locations
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -43,9 +42,9 @@ class LocationsViewModel() : ViewModel() {
     fun fetchTrips(){
         viewModelScope.launch {
             try {
-                val cards = fireStoreRepository.getTrips()
-                println(cards.toString())
-                _trips.value = cards
+                val trips = fireStoreRepository.getTrips()
+                println(trips.toString())
+                _trips.value = trips
                 Timber.tag(TAG).i( _trips.value.toString())
             } catch (e: Exception) {
                 // Handle error
@@ -53,11 +52,26 @@ class LocationsViewModel() : ViewModel() {
             }
         }
     }
-    fun createOrUpdateTrip(location: Location, documentName: String){
+    fun updateTrip(location: Location, documentName: String): Boolean{
+        var saved: Boolean = false
         viewModelScope.launch {
             try {
-                Timber.tag(TAG).i( location.toString())
-                val cards = fireStoreRepository.createTrip(location, documentName)
+                Timber.tag(TAG).i( location.name)
+                val cards = fireStoreRepository.updateTrip(location, documentName)
+                saved = true
+            } catch (e: Exception){
+                Timber.tag(TAG).e( e.message.toString());
+            }
+            return@launch
+        }
+        return saved
+    }
+
+    fun createTrip(location: Location){
+        viewModelScope.launch {
+            try {
+                Timber.tag(TAG).i( location.location_id)
+                fireStoreRepository.createTrip(location)
             } catch (e: Exception){
                 Timber.tag(TAG).e( e.message.toString());
             }

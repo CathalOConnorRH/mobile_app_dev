@@ -1,12 +1,10 @@
 package ie.coconnor.mobileappdev.models.plan
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ie.coconnor.mobileappdev.models.Location
-import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
 import ie.coconnor.mobileappdev.repository.FirestoreRepository
 import ie.coconnor.mobileappdev.repository.Trip
 import kotlinx.coroutines.launch
@@ -20,11 +18,11 @@ class PlanViewModel: ViewModel()  {
 
     val trips: LiveData<List<Trip>> = _trips
 
-    fun createTrip(tripName: Location, documentName: String){
+    fun createTrip( location: Location){
         viewModelScope.launch {
             try {
-                Timber.tag(TAG).i( tripName.toString())
-                val cards = repository.createTrip(tripName, documentName)
+                Timber.tag(TAG).i( location.location_id)
+                repository.createTrip(location)
             } catch (e: Exception){
                 Timber.tag(TAG).i( e.message.toString());
             }

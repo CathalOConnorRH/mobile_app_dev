@@ -1,12 +1,9 @@
 package ie.coconnor.mobileappdev.models.locations
 
-import android.content.res.Resources
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.LocationDetails
 import ie.coconnor.mobileappdev.repository.LocationsRepository
 import kotlinx.coroutines.launch
@@ -35,6 +32,7 @@ class LocationDetailsViewModel(): ViewModel() {
             }
         }
     }
+
     companion object {
         private const val TAG = "LocationDetailsViewModel"
     }

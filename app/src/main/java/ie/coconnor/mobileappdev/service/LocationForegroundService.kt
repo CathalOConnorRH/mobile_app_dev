@@ -13,13 +13,16 @@ import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import ie.coconnor.mobileappdev.MainActivity
 import ie.coconnor.mobileappdev.R
-import ie.coconnor.mobileappdev.repository.FirestoreRepository
 import timber.log.Timber
 
 class LocationForegroundService : Service() {
@@ -64,7 +67,7 @@ class LocationForegroundService : Service() {
         return NotificationCompat.Builder(this, "location_channel")
             .setContentTitle("Location Service")
             .setContentText("Running")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.vector)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .build()
