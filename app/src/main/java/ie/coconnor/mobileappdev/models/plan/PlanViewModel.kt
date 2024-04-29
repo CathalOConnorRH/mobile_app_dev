@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.LocationServices
 import ie.coconnor.mobileappdev.models.Location
 import ie.coconnor.mobileappdev.repository.FirestoreRepository
 import ie.coconnor.mobileappdev.repository.Trip
@@ -18,6 +20,7 @@ class PlanViewModel: ViewModel()  {
 
     val trips: LiveData<List<Trip>> = _trips
 
+    val geofencingClient = LocationServices.getGeofencingClient(this@MainActivity)
     fun createTrip( location: Location){
         viewModelScope.launch {
             try {
@@ -42,6 +45,27 @@ class PlanViewModel: ViewModel()  {
         }
     }
 
+    fun addGeofenceRequest() {
+        geofencingClient.addGeofences(getGeofenceRequest(), geofencePendingIntent).run {
+            addOnSuccessListener {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Geofence is added successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            addOnFailureListener {
+                Log.e("Error", it.localizedMessage)
+                Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    fun getGeofenceRequest(): GeofencingRequest {
+        return GeofencingRequest.Builder().apply {
+            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            addGeofences(geofenceList)
+        }.build()
+    }
     companion object {
         private const val TAG = "PlanViewModel"
     }

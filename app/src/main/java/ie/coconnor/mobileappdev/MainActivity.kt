@@ -188,7 +188,7 @@ class MainActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier.padding(paddingValues)
                     ) {
-                        NavigationGraph(navController = navController, authViewModel = authViewModel, tourViewModel = tourViewModel, locationDetailsViewModel = locationDetailsViewModel, planViewModel, sharedPref = sharedPref)
+                        NavigationGraph(navController = navController, authViewModel = authViewModel, tourViewModel = tourViewModel, locationDetailsViewModel = locationDetailsViewModel, planViewModel, sharedPref = sharedPref, geofencingClient)
                     }
                 }
             }
@@ -438,7 +438,8 @@ fun NavigationGraph(navController: NavHostController,
                     tourViewModel: LocationsViewModel,
                     locationDetailsViewModel: LocationDetailsViewModel,
                     planViewModel: PlanViewModel,
-                    sharedPref: SharedPref) {
+                    sharedPref: SharedPref,
+                    geoFencingClient: GeofencingClient) {
     var startDestination = Destinations.TestScreen.route
 
     if (DataProvider.authState == AuthState.SignedOut)
@@ -454,7 +455,7 @@ fun NavigationGraph(navController: NavHostController,
         }
 //        composable(Destinations.PlanScreenWithId.route + "/{location}", arguments = listOf(navArgument("location")  { type = NavType.StringType })
         composable(Destinations.PlanScreen.route ) {
-            PlanScreen(planViewModel, navController, sharedPref)
+            PlanScreen(planViewModel, navController, sharedPref, geoFencingClient)
         }
 
         composable(Destinations.TestScreen.route) {

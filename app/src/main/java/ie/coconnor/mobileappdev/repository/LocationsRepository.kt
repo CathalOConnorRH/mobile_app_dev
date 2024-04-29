@@ -21,6 +21,7 @@ class LocationsRepository {
                 it.url = details?.web_url
                 it.latitude = details?.latitude
                 it.longitude = details?.longitude
+                it.location_details = details
             }
         }
         return locations

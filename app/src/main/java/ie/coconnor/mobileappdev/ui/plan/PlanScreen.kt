@@ -1,5 +1,7 @@
 package ie.coconnor.mobileappdev.ui.plan
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -49,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,6 +66,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.ContentAlpha
 import androidx.wear.compose.material.LocalContentAlpha
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -70,6 +76,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import ie.coconnor.mobileappdev.MainActivity
 import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.DataProvider
 import ie.coconnor.mobileappdev.models.plan.PlanViewModel
@@ -82,12 +89,15 @@ import ie.coconnor.mobileappdev.utils.SharedPref
 fun PlanScreen(
     viewModel: PlanViewModel,
     navController: NavController,
-    sharedPref: SharedPref)
+    sharedPref: SharedPref,
+    geofencingClient: GeofencingClient)
 {
     val trips by viewModel.trips.observeAsState()
     var showDialog by remember { mutableStateOf(false) }
     val tripName = remember { mutableStateOf("") }
     var showPopup by rememberSaveable { mutableStateOf(false) }
+
+    val geofenceList = mutableListOf<Geofence>()
 
     LaunchedEffect(Unit) {
         viewModel.fetchTrips()
@@ -133,7 +143,7 @@ fun PlanScreen(
                    }
                     val bounds = boundsBuilder.build()
                     val cameraPositionState = rememberCameraPositionState {
-                        position = CameraPosition.fromLatLngZoom(bounds.center, 20f)
+                        position = CameraPosition.fromLatLngZoom(bounds.center, 14f)
                     }
 
                     GoogleMap(
@@ -141,12 +151,11 @@ fun PlanScreen(
                         cameraPositionState = cameraPositionState
                         ){
                         for (trip in trips!!) {
-                            println("here " + trip.location?.latitude)
                             val location = LatLng(trip.location?.latitude?.toDoubleOrNull()!!, trip.location?.longitude?.toDoubleOrNull()!!)
                             Marker(
                                 state = MarkerState(position = location),
                                 title = trip.location?.name,
-                                snippet = "Marker in ${trip.location?.name}"
+                                snippet = "${trip.location?.location_details?.description}"
                             )
                         }
                     }
@@ -165,7 +174,7 @@ fun PlanScreen(
                 )
                 OutlinedButton(
                     onClick = {
-
+                        println("Start geofence")
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -177,7 +186,7 @@ fun PlanScreen(
                         )
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_google_logo),
+                        painter = painterResource(id = R.drawable.vector),
                         contentDescription = "Sign Out"
                     )
 
@@ -242,7 +251,7 @@ fun PlanScreen(
 
                             OutlinedButton(
                                 onClick = {
-                                    showDialog = true
+                                    navController.navigate(Destinations.LocationsScreen.route)
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -353,17 +362,18 @@ fun PlanScreen(
     }
 }
 
-@Preview
-@Composable
-fun PlanScreenPreview(
-    viewModel: PlanViewModel = hiltViewModel(),
-    navController: NavController = rememberNavController(),
-    sharedPref: SharedPref? = null
-) {
-    if (sharedPref != null) {
-        PlanScreen(viewModel, navController, sharedPref)
-    }
-}
+//@Preview
+//@Composable
+//fun PlanScreenPreview(
+//    viewModel: PlanViewModel = hiltViewModel(),
+//    navController: NavController = rememberNavController(),
+//    sharedPref: SharedPref? = null,
+//    geofencingClient: GeofencingClient
+//) {
+//    if (sharedPref != null) {
+//        PlanScreen(viewModel, navController, sharedPref, geofencingClient)
+//    }
+//}
 //@Composable
 //fun TripList(
 //    trips: Trip
@@ -402,7 +412,10 @@ fun StandardPlanCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 36.dp
         ),
-        modifier = modifier
+        modifier = modifier,
+        onClick = {
+            println("Clicked " + trip.location?.location_id)
+        }
     ) {
         Column {
             Row(
@@ -435,7 +448,7 @@ fun StandardPlanCard(
             Row(Modifier.padding(start = 16.dp, end = 24.dp, top = 16.dp)) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
-                        text = trip.toString(),
+                        text = trip.location?.location_details?.description.toString(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.bodyMedium,
