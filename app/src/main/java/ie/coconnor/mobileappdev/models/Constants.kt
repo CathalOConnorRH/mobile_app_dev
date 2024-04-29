@@ -18,7 +18,7 @@ object Constants {
         const val EMAIL_ALREADY_IN_USE = "ERROR_EMAIL_ALREADY_IN_USE"
     }
     object Geofencing {
-        const val RADIUS = 20f
+        const val RADIUS = 70f
         const val REQUEST_CODE = 200
         const val REQUEST_CHECK_SETTINGS = 101
         const val LOCATION_INTERVAL = 100L

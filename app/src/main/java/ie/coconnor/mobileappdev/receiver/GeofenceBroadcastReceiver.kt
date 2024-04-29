@@ -10,7 +10,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -19,7 +18,6 @@ import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
 import ie.coconnor.mobileappdev.MainActivity
 import ie.coconnor.mobileappdev.R
-import ie.coconnor.mobileappdev.models.plan.PlanViewModel
 import timber.log.Timber
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {

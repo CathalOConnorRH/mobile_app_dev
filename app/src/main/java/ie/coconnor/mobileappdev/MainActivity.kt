@@ -2,6 +2,7 @@
 
 package ie.coconnor.mobileappdev
 
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
@@ -11,10 +12,8 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,11 +42,13 @@ import androidx.navigation.navArgument
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsResponse
+import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
@@ -93,7 +94,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var geofencingClient: GeofencingClient
-//    private val geofenceList = mutableListOf<Geofence>()
+    private val geofenceList = mutableListOf<Geofence>()
 
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
@@ -124,7 +125,7 @@ class MainActivity : ComponentActivity() {
         //check permission
         if (ActivityCompat.checkSelfPermission(
                 this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                 ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             currentLocation()
@@ -132,8 +133,8 @@ class MainActivity : ComponentActivity() {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    ACCESS_FINE_LOCATION,
+                    ACCESS_BACKGROUND_LOCATION
                 ),
                 REQUEST_CODE
             )
@@ -159,9 +160,8 @@ class MainActivity : ComponentActivity() {
 //        )
 //        window.setTitle("Test")
         createLocationRequest()
-        // createGeofence()
-//        println(sharedPref.getDarkMode())
-//        UIThemeController.updateUITheme(sharedPref.getDarkMode())
+//        createGeofence()
+
         setContent {
             val isDarkMode by UIThemeController.isDarkMode.collectAsState()
             MobileAppDevTheme (darkTheme = isDarkMode){
@@ -201,11 +201,11 @@ class MainActivity : ComponentActivity() {
             ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun openApplicationSettings() {
-        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)).also {
-            startActivity(it)
-        }
-    }
+//    private fun openApplicationSettings() {
+//        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)).also {
+//            startActivity(it)
+//        }
+//    }
 
     private fun decideCurrentPermissionStatus(locationPermissionsGranted: Boolean,
                                               shouldShowPermissionRationale: Boolean): String {
@@ -247,7 +247,7 @@ class MainActivity : ComponentActivity() {
         val locationRequest = LocationRequest.create().apply {
             interval = LOCATION_INTERVAL
             fastestInterval = LOCATION_FASTEST_INTERVAL
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            Priority.PRIORITY_HIGH_ACCURACY
         }
 
         val builder = LocationSettingsRequest.Builder()
@@ -276,7 +276,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    //    private fun createGeofence(){
+//    private fun createGeofence(){
 //        geofenceList.add(
 //            Geofence.Builder()
 //                .setRequestId("entry.key")
@@ -310,7 +310,7 @@ class MainActivity : ComponentActivity() {
 //            addGeofences(geofenceList)
 //        }.build()
 //    }
-//
+
     private fun checkBackGroundLocationPermission(): Boolean {
         return  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             (ContextCompat.checkSelfPermission(
@@ -336,6 +336,7 @@ class MainActivity : ComponentActivity() {
     private fun checkAndRequestLocationPermissions() {
         if (checkLocationPermission()) {
             if (checkBackGroundLocationPermission()){
+                Timber.tag(TAG).i("Start Location Service")
                 startLocationService()
             }else{
                 requestBackGroundLocationPermission()
@@ -402,35 +403,6 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "MainActivity"
     }
 }
-
-
-//@Composable
-//fun getPermissions(){
-//    val lifecycleOwner = LocalLifecycleOwner.current
-//    val permissionState = rememberMultiplePermissionsState(permissions = listOf(
-//        ACCESS_COARSE_LOCATION,
-//        ACCESS_FINE_LOCATION
-//    ))
-//
-//    DisposableEffect(key1 = lifecycleOwner) {
-//        val observer = LifecycleEventObserver{ source, event ->
-//            when (event) {
-//                Lifecycle.Event.ON_START -> {
-//                    permissionState.launchMultiplePermissionRequest()
-//                }
-//
-//                else -> {
-//
-//                }
-//            }
-//
-//        }
-//        lifecycleOwner.lifecycle.addObserver(observer)
-//        onDispose {
-//            lifecycleOwner.lifecycle.removeObserver(observer)
-//        }
-//    }
-//}
 
 @Composable
 fun NavigationGraph(navController: NavHostController,

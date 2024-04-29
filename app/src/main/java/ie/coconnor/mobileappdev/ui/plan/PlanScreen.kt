@@ -1,6 +1,11 @@
 package ie.coconnor.mobileappdev.ui.plan
 
-import android.util.Log
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -55,12 +60,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
+import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -76,13 +81,15 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import ie.coconnor.mobileappdev.MainActivity
 import ie.coconnor.mobileappdev.R
+import ie.coconnor.mobileappdev.models.Constants.Geofencing.RADIUS
 import ie.coconnor.mobileappdev.models.DataProvider
 import ie.coconnor.mobileappdev.models.plan.PlanViewModel
+import ie.coconnor.mobileappdev.receiver.GeofenceBroadcastReceiver
 import ie.coconnor.mobileappdev.repository.Trip
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.utils.SharedPref
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,16 +105,21 @@ fun PlanScreen(
     var showPopup by rememberSaveable { mutableStateOf(false) }
 
     val geofenceList = mutableListOf<Geofence>()
+    val context = LocalContext.current
+    val geofencePendingIntent: PendingIntent by lazy {
+        val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
+        PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        )
+    }
+
 
     LaunchedEffect(Unit) {
         viewModel.fetchTrips()
     }
-
-//    val locationOnMap = LatLng(trips.!!.latitude?.toDoubleOrNull()!!, locationDetails!!.longitude?.toDoubleOrNull()!!)
-//    println(locationOnMap.toString())
-//    val cameraPositionState = rememberCameraPositionState {
-//        position = CameraPosition.fromLatLngZoom(locationOnMap, 10f)
-//    }
 
     Scaffold(
         floatingActionButton = {
@@ -175,6 +187,18 @@ fun PlanScreen(
                 OutlinedButton(
                     onClick = {
                         println("Start geofence")
+
+                        for(trip in trips!!){
+                            createGeofence(
+                                geofenceList,
+                                context,
+                                geofencePendingIntent,
+                                geofencingClient,
+                                trip.location?.location_id.toString(),
+                                trip.location?.latitude?.toDoubleOrNull()!!,
+                                trip.location?.longitude?.toDoubleOrNull()!!
+                            )
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -187,7 +211,7 @@ fun PlanScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.vector),
-                        contentDescription = "Sign Out"
+                        contentDescription = "Start Tour"
                     )
 
                     Text(
@@ -360,8 +384,117 @@ fun PlanScreen(
             }
         }
     }
+
+//    fun getGeofenceRequest(): GeofencingRequest {
+//        return GeofencingRequest.Builder().apply {
+//            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+//            addGeofences(geofenceList)
+//        }.build()
+//    }
+//
+//    @SuppressLint("MissingPermission")
+//    fun addGeofenceRequest() {
+//        if (ActivityCompat.checkSelfPermission(
+//                context,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            return
+//        }
+//        geofencingClient.addGeofences(getGeofenceRequest(), geofencePendingIntent).run {
+//            addOnSuccessListener {
+//                Toast.makeText(
+//                    context,
+//                    "Geofence is added successfully",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//            addOnFailureListener {
+//                Timber.tag("TAG").e("Error ${it.localizedMessage}")
+//                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
+//
+//    fun createGeofence(requestId: String, latitude: Double, longitude: Double){
+//        geofenceList.add(
+//            Geofence.Builder()
+//                .setRequestId(requestId)
+//                .setCircularRegion(latitude, longitude, RADIUS)
+//                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+//                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
+//                .build()
+//        )
+//        addGeofenceRequest()
+//
+//    }
 }
 
+fun getGeofenceRequest(geofenceList: MutableList<Geofence>): GeofencingRequest {
+    return GeofencingRequest.Builder().apply {
+        setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+        addGeofences(geofenceList)
+    }.build()
+}
+
+@SuppressLint("MissingPermission")
+fun addGeofenceRequest(context: Context, geofencingClient: GeofencingClient, geofencePendingIntent: PendingIntent, geofenceList: MutableList<Geofence>) {
+
+    if (ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        println("Missing permissions")
+        // TODO: Consider calling
+        //    ActivityCompat#requestPermissions
+        // here to request the missing permissions, and then overriding
+        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+        //                                          int[] grantResults)
+        // to handle the case where the user grants the permission. See the documentation
+        // for ActivityCompat#requestPermissions for more details.
+        return
+    }
+    geofencingClient.addGeofences(getGeofenceRequest(geofenceList), geofencePendingIntent).run {
+        addOnSuccessListener {
+            Toast.makeText(
+                context,
+                "Geofence is added successfully",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        addOnFailureListener {
+            Timber.tag("TAG").e("Error ${it.localizedMessage}")
+            Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
+fun createGeofence(geofenceList: MutableList<Geofence>, context: Context, geofencePendingIntent: PendingIntent, geofencingClient: GeofencingClient, requestId: String, latitude: Double, longitude: Double){
+    geofenceList.add(
+//        Geofence.Builder()
+//            .setRequestId(requestId)
+//            .setCircularRegion(latitude, longitude, RADIUS)
+//            .setExpirationDuration(Geofence.NEVER_EXPIRE)
+//            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
+//            .build()
+        Geofence.Builder()
+                .setRequestId(requestId)
+                .setCircularRegion(latitude, longitude, RADIUS)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
+                .build()
+    )
+    addGeofenceRequest(context, geofencingClient ,geofencePendingIntent, geofenceList )
+
+}
 //@Preview
 //@Composable
 //fun PlanScreenPreview(
@@ -405,8 +538,6 @@ fun StandardPlanCard(
     viewModel: PlanViewModel = hiltViewModel()
 
 ) {
-    val placeholder = R.drawable.vector
-
     ElevatedCard(
         shape = shape,
         elevation = CardDefaults.cardElevation(
@@ -471,28 +602,23 @@ fun StandardPlanCard(
 fun PopupBox(popupWidth: Float, popupHeight:Float, showPopup: Boolean, onClickOutside: () -> Unit, content: @Composable() () -> Unit) {
 
     if (showPopup) {
-        // full screen background
         Box(
             modifier = Modifier
                 .fillMaxSize()
-//                .background(Color.Green)
                 .zIndex(10F),
             contentAlignment = Alignment.Center
         ) {
-            // popup
             Popup(
                 alignment = Alignment.Center,
                 properties = PopupProperties(
                     excludeFromSystemGesture = true,
                 ),
-                // to dismiss on click outside
                 onDismissRequest = { onClickOutside() }
             ) {
                 Box(
                     Modifier
                         .width(popupWidth.dp)
                         .height(popupHeight.dp)
-//                        .background(Color.White)
                         .clip(RoundedCornerShape(4.dp)),
                     contentAlignment = Alignment.Center
                 ) {
