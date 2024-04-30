@@ -9,9 +9,10 @@ import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 
 class FirestoreRepository {
+    val collectionName = "trips"
     suspend fun getTrips(): List<Trip> {
         println(DataProvider.user?.uid)
-        val querySnapshot = Constants.db.collection("trips")
+        val querySnapshot = Constants.db.collection(collectionName)
             .whereEqualTo("username", DataProvider.user?.uid)
             .get()
             .addOnSuccessListener { result ->
@@ -34,7 +35,7 @@ class FirestoreRepository {
 //            DataProvider.user?.uid
 //        )
 
-        var trips = Constants.db.collection("trips").document(documentName)
+        var trips = Constants.db.collection(collectionName).document(documentName)
             .update("locations", FieldValue.arrayUnion(location))
             .addOnSuccessListener { Timber.tag(TAG).d("DocumentSnapshot successfully written!") }
             .addOnFailureListener { e -> Timber.tag(TAG).e( "Error writing document $e") }.await()
@@ -47,10 +48,18 @@ class FirestoreRepository {
              DataProvider.user?.uid
         )
 
-        Constants.db.collection("trips").document(location.location_id.toString() + "::" + DataProvider.user?.uid)
+        Constants.db.collection(collectionName).document(location.location_id.toString() + "::" + DataProvider.user?.uid)
             .set(trip)
             .addOnSuccessListener { Timber.tag(TAG).d( "Document ${location.location_id.toString() + "::" + DataProvider.user?.uid} successfully written!") }
             .addOnFailureListener { e -> Timber.tag(TAG).e("Error writing document ${location.location_id.toString() + "::" + DataProvider.user?.uid} $e") }.await()
+    }
+
+    suspend fun removeLocation(selectedLocation: String) {
+        Constants.db.collection(collectionName).document(selectedLocation + "::" + DataProvider.user?.uid)
+            .delete()
+            .addOnSuccessListener { Timber.tag(TAG).i("Document ${selectedLocation} successfully deleted!") }
+            .addOnFailureListener { e ->Timber.tag(TAG).e("Error deleting document ${e}") }.await()
+
     }
 
     companion object {

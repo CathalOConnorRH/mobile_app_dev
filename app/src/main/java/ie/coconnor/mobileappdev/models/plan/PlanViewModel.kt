@@ -42,6 +42,19 @@ class PlanViewModel: ViewModel()  {
         }
     }
 
+    fun onSwipeToDelete(selectedLocation: String){
+        viewModelScope.launch {
+            try {
+                repository.removeLocation(selectedLocation)
+//                _trips.value = cards
+                Timber.tag(TAG).i("${selectedLocation} removed from trips")
+                val cards = repository.getTrips()
+                _trips.value = cards
+            } catch (e: Exception) {
+                Timber.tag(TAG).e( e.message.toString());
+            }
+        }
+    }
     companion object {
         private const val TAG = "PlanViewModel"
     }

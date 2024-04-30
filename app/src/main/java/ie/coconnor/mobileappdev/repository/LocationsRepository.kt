@@ -8,6 +8,7 @@ import ie.coconnor.mobileappdev.service.RetrofitInstance
 class LocationsRepository {
 
     private val locationsService = RetrofitInstance.apiService
+    private val firestoreRepository = FirestoreRepository
 
     suspend fun getLocations(apiKey: String, searchQuery: String, category: String): LocationResponse {
 
