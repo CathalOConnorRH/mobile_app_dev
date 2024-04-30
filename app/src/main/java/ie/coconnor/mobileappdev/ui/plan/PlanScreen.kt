@@ -29,6 +29,7 @@ import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.LocationOn
@@ -46,6 +47,7 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -89,6 +91,8 @@ import ie.coconnor.mobileappdev.receiver.GeofenceBroadcastReceiver
 import ie.coconnor.mobileappdev.repository.Trip
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.utils.SharedPref
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,7 +107,7 @@ fun PlanScreen(
     var showDialog by remember { mutableStateOf(false) }
     val tripName = remember { mutableStateOf("") }
     var showPopup by rememberSaveable { mutableStateOf(false) }
-
+    var tourButton = remember { mutableStateOf("Start Tour") }
     val geofenceList = mutableListOf<Geofence>()
     val context = LocalContext.current
     val geofencePendingIntent: PendingIntent by lazy {
@@ -186,18 +190,24 @@ fun PlanScreen(
                 )
                 OutlinedButton(
                     onClick = {
-                        println("Start geofence")
+                        if(tourButton.value.equals("Start Tour")) {
+                            println("Start geofence")
 
-                        for(trip in trips!!){
-                            createGeofence(
-                                geofenceList,
-                                context,
-                                geofencePendingIntent,
-                                geofencingClient,
-                                trip.location?.location_id.toString(),
-                                trip.location?.latitude?.toDoubleOrNull()!!,
-                                trip.location?.longitude?.toDoubleOrNull()!!
-                            )
+                            for (trip in trips!!) {
+                                createGeofence(
+                                    geofenceList,
+                                    context,
+                                    geofencePendingIntent,
+                                    geofencingClient,
+                                    trip.location?.location_id.toString(),
+                                    trip.location?.latitude?.toDoubleOrNull()!!,
+                                    trip.location?.longitude?.toDoubleOrNull()!!
+                                )
+                            }
+                            tourButton.value = "Stop Tour"
+                        } else {
+                            removeGeofence(geofencingClient, geofencePendingIntent)
+                            tourButton.value = "Start Tour"
                         }
                     },
                     modifier = Modifier
@@ -215,7 +225,7 @@ fun PlanScreen(
                     )
 
                     Text(
-                        text = "Start Tour",
+                        text = tourButton.value,
                         modifier = Modifier.padding(6.dp),
                         color = Color.Black.copy()
                     )
@@ -302,13 +312,34 @@ fun PlanScreen(
                         LazyColumn {
                             trips?.let {
                                 items(it) { trip ->
-
-                                    //Text(text = tour.name)
-                                    StandardPlanCard(
-                                        trip = trip,
-                                        navController = navController,
-                                        sharedPref = sharedPref
+                                    val delete = SwipeAction(
+                                        onSwipe = {
+                                            viewModel.onSwipeToDelete(trip.location?.location_id.toString())
+                                            Timber.tag("TAG").i("OnSwipeToDelete ${trip.location?.location_id.toString()}")
+                                        },
+                                        icon = {
+                                            Icon(
+                                                Icons.Default.Delete,
+                                                contentDescription = "Delete chat",
+                                                modifier = Modifier.padding(16.dp),
+                                                tint = Color.White
+                                            )
+                                        }, background = Color.Red.copy(alpha = 0.5f),
+                                        isUndo = true
                                     )
+                                    //Text(text = tour.name)
+                                    SwipeableActionsBox(
+                                        modifier = Modifier,
+                                        swipeThreshold = 200.dp,
+//                                        startActions = listOf(archive),
+                                        endActions = listOf(delete)
+                                    ) {
+                                        StandardPlanCard(
+                                            trip = trip,
+                                            navController = navController,
+                                            sharedPref = sharedPref
+                                        )
+                                    }
                                     Spacer(modifier = Modifier.height(10.dp)) // Add a divider between items
                                 }
                             }
@@ -469,6 +500,8 @@ fun addGeofenceRequest(context: Context, geofencingClient: GeofencingClient, geo
                 "Geofence is added successfully",
                 Toast.LENGTH_SHORT
             ).show()
+            Timber.tag("TAG").i("Geofences added")
+
         }
         addOnFailureListener {
             Timber.tag("TAG").e("Error ${it.localizedMessage}")
@@ -477,6 +510,16 @@ fun addGeofenceRequest(context: Context, geofencingClient: GeofencingClient, geo
     }
 }
 
+fun removeGeofence(geofencingClient: GeofencingClient, geofencePendingIntent: PendingIntent) {
+    geofencingClient.removeGeofences(geofencePendingIntent).run {
+        addOnSuccessListener {
+            Timber.tag("TAG").i("Geofences Removed")
+        }
+        addOnFailureListener {
+            Timber.tag("TAG").e("Error ${it.localizedMessage}")
+        }
+    }
+}
 fun createGeofence(geofenceList: MutableList<Geofence>, context: Context, geofencePendingIntent: PendingIntent, geofencingClient: GeofencingClient, requestId: String, latitude: Double, longitude: Double){
     geofenceList.add(
 //        Geofence.Builder()

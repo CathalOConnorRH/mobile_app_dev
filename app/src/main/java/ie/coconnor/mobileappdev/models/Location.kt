@@ -20,7 +20,8 @@ data class Location(
     var url: String? = "",
     var latitude: String? = "",
     var longitude: String? = "",
-    var location_details: LocationDetails? = null
+    var location_details: LocationDetails? = null,
+    var saved: Boolean? = false
 
 ){
     constructor(): this("","")

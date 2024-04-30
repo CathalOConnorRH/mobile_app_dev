@@ -82,17 +82,16 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                     sharedPref: SharedPref)
 {
     val locations by viewModel.locations.observeAsState()
-//    val trips by viewModel.trips.observeAsState()
+    val trips by viewModel.trips.observeAsState()
 
     var location by remember { mutableStateOf("Waterford, Ireland") }
-//    var tripName by remember { mutableStateOf("") }
-
     var showDialog by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val tripAdvisorApiKey = context.getString(R.string.tripadvisor)
 
     LaunchedEffect(Unit) {
+        viewModel.fetchTrips()
         viewModel.fetchTours(location, tripAdvisorApiKey)
     }
     Scaffold(
@@ -155,10 +154,22 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                     LazyColumn {
                         locations?.let {
                             items(it.data) { location ->
+                                var saved = false
+                                println("Trips ${trips?.size.toString()}")
+                                trips?.forEach { trip ->
+                                    println(trip.location?.location_id.toString())
+                                    if(trip.location?.location_id?.contains(location.location_id.toString()) == true) {
+                                        println(location.name)
+                                        location.saved = true
+                                        saved = true
+                                    }
+                                }
+
                                 StandardLocationCard(
                                     location = location,
                                     navController = navController,
-                                    sharedPref = sharedPref
+                                    sharedPref = sharedPref,
+                                    saved = saved
                                 )
                                 Spacer(modifier = Modifier.height(10.dp)) // Add a divider between items
                             }
@@ -187,7 +198,8 @@ fun StandardLocationCard(
     shape: Shape = MaterialTheme.shapes.extraLarge,
     navController: NavController = rememberNavController(),
     sharedPref: SharedPref? = null,
-    viewModel: LocationsViewModel = hiltViewModel()
+    viewModel: LocationsViewModel = hiltViewModel(),
+    saved: Boolean? = false
     ) {
     val placeholder = R.drawable.vector
     val showTripDialog = false
@@ -278,8 +290,7 @@ fun StandardLocationCard(
                             viewModel.createTrip(location)
                             navController.navigate(Destinations.PlanScreen.route)
                         }) {
-                            val saved = false
-                            if(saved) {
+                            if(location.saved == true) {
                                 Icon(Icons.Default.Favorite, contentDescription = null)
                             } else {
                                 Icon(Icons.Default.FavoriteBorder, contentDescription = null)
@@ -291,6 +302,7 @@ fun StandardLocationCard(
                             putExtra(Intent.EXTRA_TITLE, "Check out this location I want to visit")
                             type = "text/plain"
                         }
+
                         val shareIntent = Intent.createChooser(sendIntent, null)
                         var context = LocalContext.current
 
