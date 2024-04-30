@@ -143,5 +143,5 @@ dependencies {
     implementation ("com.squareup.moshi:moshi-kotlin:1.15.1")
 
     implementation ("com.jakewharton.timber:timber:5.0.1")
-    implementation ("me.saket.swipe:swipe:1.1.1")
+    implementation ("me.saket.swipe:swipe:1.3.0")
 }
