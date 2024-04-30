@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -74,14 +75,14 @@ class LocationForegroundService : Service() {
     }
 
     private fun requestLocationUpdates() {
-        val locationRequest = LocationRequest.Builder(0 * 1000) // Interval in milliseconds
+        val locationRequest = LocationRequest.Builder(1 * 1000) // Interval in milliseconds
             .setPriority(Priority.PRIORITY_HIGH_ACCURACY) // Set priority separately
             .build()
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 val location = locationResult.lastLocation
                 // Send location to the server here
-               // Log.e("Location",location.toString())
+                Log.e("Location",location.toString())
             }
         }
 

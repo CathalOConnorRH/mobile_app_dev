@@ -1,46 +1,33 @@
-package ie.coconnor.mobileappdev.ui.screens
+package ie.coconnor.mobileappdev.ui.settings
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalContext
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,19 +37,20 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import ie.coconnor.mobileappdev.AuthViewModel
 import ie.coconnor.mobileappdev.R
-import ie.coconnor.mobileappdev.models.DataProvider
+import ie.coconnor.mobileappdev.models.auth.AuthViewModel
+import ie.coconnor.mobileappdev.models.auth.DataProvider
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.utils.UIThemeController
 
-
+@OptIn(ExperimentalCoilApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewModel) {
@@ -82,7 +70,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = " Settings",
+                    text = "Settings",
                     modifier = Modifier
                         .padding(10.dp),
                     fontSize = 50.sp,
@@ -161,7 +149,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = " Welcome",
+                        text = "Welcome",
                         modifier = Modifier
                             .padding(10.dp),
                         fontSize = 30.sp,
@@ -173,7 +161,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "${DataProvider.getDisplayName(user)}",
+                        text = DataProvider.getDisplayName(user),
                         modifier = Modifier
                             .padding(10.dp),
                         fontSize = 30.sp,
@@ -215,7 +203,7 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = " Theme",
+                        text = "Theme",
                         modifier = Modifier
                             .padding(10.dp),
                         fontSize = 30.sp,
@@ -242,139 +230,12 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                         checked = isDarkMode,
                         onCheckedChange = {
                             if (it) {
-                                println("The switch is checked.")
                                 UIThemeController.updateUITheme(true)
-//                            sharedPref.setDarkMode(true)
-
                             } else {
-                                println("The switch is unchecked.")
                                 UIThemeController.updateUITheme(false)
-//                            sharedPref.setDarkMode(false)
-
                             }
                         },
                     )
-                }
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = " Permissions",
-                        modifier = Modifier
-                            .padding(10.dp),
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(
-                        modifier = Modifier,
-                    ) {
-
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-
-                            Spacer(modifier = Modifier.width(28.dp))
-
-                            Text(
-                                text = "Allow Location Service",
-                                modifier = Modifier
-                                    .padding(10.dp),
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Light
-                            )
-
-                            val foregroundServiceIsRunning = true
-                            Switch(
-                                checked = foregroundServiceIsRunning,
-                                onCheckedChange = {
-                                    if (it) {
-                                        println("The switch is checked.")
-                                    } else {
-                                        println("The switch is unchecked.")
-                                    }
-                                },
-                            )
-                        }
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Spacer(modifier = Modifier.width(28.dp))
-
-                            Text(
-                                text = "Some Permission",
-                                modifier = Modifier
-                                    .padding(10.dp),
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Light
-                            )
-                            SwitchWithIconExample {
-
-                            }
-                        }
-                    }
-                }
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "Text to Speech Settings",
-                        modifier = Modifier
-                            .padding(10.dp),
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(
-                        modifier = Modifier,
-                    ) {
-
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-
-                            Spacer(modifier = Modifier.width(28.dp))
-
-                            Text(
-                                text = "Auto Play",
-                                modifier = Modifier
-                                    .padding(10.dp),
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Light
-                            )
-                            SwitchWithIconExample {
-                            }
-                        }
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Spacer(modifier = Modifier.width(28.dp))
-
-                            Text(
-                                text = "Text to Speech langauge",
-                                modifier = Modifier
-                                    .padding(10.dp),
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Light
-                            )
-                            SwitchWithIconExample {
-                            }
-                        }
-                    }
                 }
                 Row(
                     modifier = Modifier,
@@ -476,81 +337,11 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
     }
 }
 
-
-
-
-
-
-//            Button(
-//                onClick = {
-//
-//                },
-//                modifier = Modifier
-//                    .size(width = 300.dp, height = 50.dp)
-//                    .fillMaxWidth()
-//                    .padding(horizontal = 16.dp),
-//                shape = RoundedCornerShape(10.dp),
-////                    colors = ButtonDefaults.buttonColors(
-////                        containerColor = Color.White
-////                    )
-//            ) {
-//                Image(
-//                    painter = painterResource(id = R.drawable.ic_google_logo),
-//                    contentDescription = ""
-//                )
-//                Text(
-//                    text = "Sign Out",
-//                    modifier = Modifier.padding(6.dp),
-////                        color = Color.Black.copy(alpha = 0.5f)
-//                )
-//            }
-
-@Composable
-fun SwitchWithIconExample(onCheckedChange: () -> Unit) {
-    var checked by remember { mutableStateOf(false) }
-
-    Switch(
-        checked = checked,
-        onCheckedChange = {
-            checked = it
-        },
-        thumbContent = if (checked) {
-            {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize),
-                )
-            }
-        } else {
-            null
-        }
-    )
-}
-
 @Preview
 @Composable
 fun SettingScreenPreview() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
-    val context: CompositionLocalContext
 
     SettingsScreen(navController, authViewModel)
-}
-
-@Composable
-fun RoundImage(
-    image: Painter, modifier: Modifier = Modifier
-) {
-    Image(
-        painter = image,
-        contentDescription = "Profile image",
-        modifier = modifier
-            .aspectRatio(1f, matchHeightConstraintsFirst = true)
-            .border(
-                width = 6.dp, color = Color.White, shape = CircleShape
-            )
-            .padding(3.dp)
-            .clip(CircleShape)
-    )
 }

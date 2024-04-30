@@ -36,23 +36,22 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import androidx.wear.compose.material.ContentAlpha
 import androidx.wear.compose.material.LocalContentAlpha
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import ie.coconnor.mobileappdev.R
-import ie.coconnor.mobileappdev.models.Location
-import ie.coconnor.mobileappdev.models.LocationDetails
+import ie.coconnor.mobileappdev.models.locations.LocationDetails
 import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
-import ie.coconnor.mobileappdev.ui.component.UserRatingBar
+import ie.coconnor.mobileappdev.ui.components.UserRatingBar
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LocationDetailsScreen(
-    navController: NavHostController,
     viewModel: LocationDetailsViewModel,
     location: String?
 ) {
@@ -65,14 +64,12 @@ fun LocationDetailsScreen(
         }
     }
 
-    Scaffold(
-    ) {
+    Scaffold()
+    {
         Column {
             if (locationDetails == null) {
-                // Show loading indicator or placeholder
                 Text(text = "Loading...")
             } else {
-                println("Location Details Screen ${locationDetails.toString()}")
                 LocationDetailsDisplay(locationDetails!!)
             }
         }
@@ -82,13 +79,8 @@ fun LocationDetailsScreen(
 @Composable
 fun LocationDetailsDisplay(
     locationDetails: LocationDetails,
-    modifier: Modifier = Modifier,
-    location: Location = Location(
-        name = "",
-        imageUrl = ""
-    )
+    modifier: Modifier = Modifier
 ){
-    val placeholder = R.drawable.vector
 
     ElevatedCard(
         shape = shape,
@@ -99,14 +91,14 @@ fun LocationDetailsDisplay(
     ) {
         Column {
             Row(
-                Modifier
+                modifier
                     .fillMaxWidth()
                     .height(72.dp)
                     .padding(start = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    modifier = Modifier
+                    modifier
                         .size(40.dp)
                         .verticalScroll(rememberScrollState()),
                     contentAlignment = Alignment.Center
@@ -136,12 +128,12 @@ fun LocationDetailsDisplay(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(Modifier.padding(start = 16.dp, end = 24.dp, top = 16.dp)) {
+            Row(Modifier.padding(start = 16.dp, end = 24.dp, top = 16.dp, bottom = 16.dp)) {
                 UserRatingBar(
                     // 2. Customized UserRatingBar
                     ratingState = (locationDetails.rating?.toFloat() ?: 0.0) as Float,
                     ratingIconPainter = painterResource(id = R.drawable.vector),
-                    size = 24.dp,
+                    size = 34.dp,
                     selectedColor = Color(0xFF5A966E),
                 )
                 // 3. Current Selected Value Feedback
@@ -153,19 +145,18 @@ fun LocationDetailsDisplay(
             }
 
 
-            val locationOnMap = LatLng(locationDetails!!.latitude?.toDoubleOrNull()!!, locationDetails!!.longitude?.toDoubleOrNull()!!)
-            println(locationOnMap.toString())
-//            val cameraPositionState = rememberCameraPositionState {
-//                position = CameraPosition.fromLatLngZoom(locationOnMap, 10f)
-//            }
+            val locationOnMap = LatLng(locationDetails.latitude?.toDoubleOrNull()!!, locationDetails.longitude?.toDoubleOrNull()!!)
+            val cameraPositionState = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(locationOnMap, 10f)
+            }
             GoogleMap(
                 modifier = Modifier.fillMaxWidth(),
-//                cameraPositionState = cameraPositionState
+                cameraPositionState = cameraPositionState
             ) {
                 Marker(
                     state = MarkerState(position = locationOnMap),
-                    title = locationDetails!!.name,
-                    snippet = locationDetails!!.description?.substring(0,20)
+                    title = locationDetails.name,
+                    snippet = locationDetails.description?.substring(0,20)
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -177,7 +168,8 @@ fun LocationDetailsDisplay(
 @Preview(group = "LocationDetails")
 @Composable
 fun PreviewLocationsDetails(
-    @PreviewParameter(SampleLocationDetailsProvider::class) locationDetails: LocationDetails)
+    @PreviewParameter(SampleLocationDetailsProvider::class) locationDetails: LocationDetails
+)
 {
     LocationDetailsDisplay(locationDetails = locationDetails)
 }

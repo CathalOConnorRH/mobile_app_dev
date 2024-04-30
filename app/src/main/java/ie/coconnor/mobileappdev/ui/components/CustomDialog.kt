@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package ie.coconnor.mobileappdev.ui.component
+package ie.coconnor.mobileappdev.ui.components
 
 import android.R
 import androidx.compose.foundation.BorderStroke

@@ -1,14 +1,13 @@
-package ie.coconnor.mobileappdev
+package ie.coconnor.mobileappdev.models.auth
 
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ie.coconnor.mobileappdev.models.DataProvider
-import ie.coconnor.mobileappdev.models.Response
-import ie.coconnor.mobileappdev.repository.AuthRepository
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ie.coconnor.mobileappdev.models.Response
+import ie.coconnor.mobileappdev.repository.AuthRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

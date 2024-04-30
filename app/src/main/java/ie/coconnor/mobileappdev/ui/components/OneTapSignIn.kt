@@ -1,9 +1,9 @@
-package ie.coconnor.mobileappdev.ui.component
+package ie.coconnor.mobileappdev.ui.components
 
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import ie.coconnor.mobileappdev.models.DataProvider
+import ie.coconnor.mobileappdev.models.auth.DataProvider
 import ie.coconnor.mobileappdev.models.Response
 import com.google.android.gms.auth.api.identity.BeginSignInResult
 

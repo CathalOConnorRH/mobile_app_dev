@@ -2,6 +2,7 @@
 
 package ie.coconnor.mobileappdev
 
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
@@ -11,10 +12,9 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,23 +43,26 @@ import androidx.navigation.navArgument
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsResponse
+import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.AndroidEntryPoint
-import ie.coconnor.mobileappdev.models.AuthState
 import ie.coconnor.mobileappdev.models.Constants.BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE
 import ie.coconnor.mobileappdev.models.Constants.Geofencing.LOCATION_FASTEST_INTERVAL
 import ie.coconnor.mobileappdev.models.Constants.Geofencing.LOCATION_INTERVAL
 import ie.coconnor.mobileappdev.models.Constants.Geofencing.REQUEST_CHECK_SETTINGS
 import ie.coconnor.mobileappdev.models.Constants.Geofencing.REQUEST_CODE
 import ie.coconnor.mobileappdev.models.Constants.LOCATION_PERMISSION_REQUEST_CODE
-import ie.coconnor.mobileappdev.models.DataProvider
+import ie.coconnor.mobileappdev.models.auth.AuthState
+import ie.coconnor.mobileappdev.models.auth.AuthViewModel
+import ie.coconnor.mobileappdev.models.auth.DataProvider
 import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
 import ie.coconnor.mobileappdev.models.locations.LocationsViewModel
 import ie.coconnor.mobileappdev.models.plan.PlanViewModel
@@ -72,8 +75,7 @@ import ie.coconnor.mobileappdev.ui.login.LoginScreen
 import ie.coconnor.mobileappdev.ui.navigation.BottomBar
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.ui.plan.PlanScreen
-import ie.coconnor.mobileappdev.ui.screens.SettingsScreen
-import ie.coconnor.mobileappdev.ui.screens.TestScreen
+import ie.coconnor.mobileappdev.ui.settings.SettingsScreen
 import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
 import ie.coconnor.mobileappdev.utils.SharedPref
 import ie.coconnor.mobileappdev.utils.UIThemeController
@@ -93,7 +95,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var geofencingClient: GeofencingClient
-//    private val geofenceList = mutableListOf<Geofence>()
+    private val geofenceList = mutableListOf<Geofence>()
 
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
@@ -106,7 +108,7 @@ class MainActivity : ComponentActivity() {
     }
 
 
-//    lateinit var textToSpeech: TextToSpeech
+    lateinit var textToSpeech: TextToSpeech
 
 
     @OptIn(ExperimentalPermissionsApi::class)
@@ -119,12 +121,24 @@ class MainActivity : ComponentActivity() {
             Timber.plant(Timber.DebugTree())
         }
 
+//        textToSpeech.language = Locale.US
+
+        textToSpeech = TextToSpeech(this) {status ->
+            if (status == TextToSpeech.SUCCESS){
+                Timber.tag("TAG").d("TextToSpeech Initialization Success")
+//                textToSpeech.speak("test text to speech", TextToSpeech.QUEUE_FLUSH, null, null)
+
+            }else{
+                Timber.tag("TAG").d("TextToSpeech Initialization Failed")
+            }
+        }
+
         Timber.tag(TAG).i("Creating geofence client")
         geofencingClient = LocationServices.getGeofencingClient(this)
         //check permission
         if (ActivityCompat.checkSelfPermission(
                 this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                 ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             currentLocation()
@@ -132,8 +146,8 @@ class MainActivity : ComponentActivity() {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    ACCESS_FINE_LOCATION,
+                    ACCESS_BACKGROUND_LOCATION
                 ),
                 REQUEST_CODE
             )
@@ -159,9 +173,8 @@ class MainActivity : ComponentActivity() {
 //        )
 //        window.setTitle("Test")
         createLocationRequest()
-        // createGeofence()
-//        println(sharedPref.getDarkMode())
-//        UIThemeController.updateUITheme(sharedPref.getDarkMode())
+//        createGeofence()
+
         setContent {
             val isDarkMode by UIThemeController.isDarkMode.collectAsState()
             MobileAppDevTheme (darkTheme = isDarkMode){
@@ -188,7 +201,7 @@ class MainActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier.padding(paddingValues)
                     ) {
-                        NavigationGraph(navController = navController, authViewModel = authViewModel, tourViewModel = tourViewModel, locationDetailsViewModel = locationDetailsViewModel, planViewModel, sharedPref = sharedPref)
+                        NavigationGraph(navController = navController, authViewModel = authViewModel, tourViewModel = tourViewModel, locationDetailsViewModel = locationDetailsViewModel, planViewModel, sharedPref = sharedPref, geofencingClient)
                     }
                 }
             }
@@ -201,11 +214,11 @@ class MainActivity : ComponentActivity() {
             ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun openApplicationSettings() {
-        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)).also {
-            startActivity(it)
-        }
-    }
+//    private fun openApplicationSettings() {
+//        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)).also {
+//            startActivity(it)
+//        }
+//    }
 
     private fun decideCurrentPermissionStatus(locationPermissionsGranted: Boolean,
                                               shouldShowPermissionRationale: Boolean): String {
@@ -247,7 +260,7 @@ class MainActivity : ComponentActivity() {
         val locationRequest = LocationRequest.create().apply {
             interval = LOCATION_INTERVAL
             fastestInterval = LOCATION_FASTEST_INTERVAL
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            Priority.PRIORITY_HIGH_ACCURACY
         }
 
         val builder = LocationSettingsRequest.Builder()
@@ -276,7 +289,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    //    private fun createGeofence(){
+//    private fun createGeofence(){
 //        geofenceList.add(
 //            Geofence.Builder()
 //                .setRequestId("entry.key")
@@ -310,7 +323,7 @@ class MainActivity : ComponentActivity() {
 //            addGeofences(geofenceList)
 //        }.build()
 //    }
-//
+
     private fun checkBackGroundLocationPermission(): Boolean {
         return  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             (ContextCompat.checkSelfPermission(
@@ -336,6 +349,7 @@ class MainActivity : ComponentActivity() {
     private fun checkAndRequestLocationPermissions() {
         if (checkLocationPermission()) {
             if (checkBackGroundLocationPermission()){
+                Timber.tag(TAG).i("Start Location Service")
                 startLocationService()
             }else{
                 requestBackGroundLocationPermission()
@@ -403,43 +417,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-//@Composable
-//fun getPermissions(){
-//    val lifecycleOwner = LocalLifecycleOwner.current
-//    val permissionState = rememberMultiplePermissionsState(permissions = listOf(
-//        ACCESS_COARSE_LOCATION,
-//        ACCESS_FINE_LOCATION
-//    ))
-//
-//    DisposableEffect(key1 = lifecycleOwner) {
-//        val observer = LifecycleEventObserver{ source, event ->
-//            when (event) {
-//                Lifecycle.Event.ON_START -> {
-//                    permissionState.launchMultiplePermissionRequest()
-//                }
-//
-//                else -> {
-//
-//                }
-//            }
-//
-//        }
-//        lifecycleOwner.lifecycle.addObserver(observer)
-//        onDispose {
-//            lifecycleOwner.lifecycle.removeObserver(observer)
-//        }
-//    }
-//}
-
 @Composable
 fun NavigationGraph(navController: NavHostController,
                     authViewModel: AuthViewModel,
                     tourViewModel: LocationsViewModel,
                     locationDetailsViewModel: LocationDetailsViewModel,
                     planViewModel: PlanViewModel,
-                    sharedPref: SharedPref) {
-    var startDestination = Destinations.TestScreen.route
+                    sharedPref: SharedPref,
+                    geoFencingClient: GeofencingClient) {
+    var startDestination = Destinations.LocationsScreen.route
 
     if (DataProvider.authState == AuthState.SignedOut)
     {
@@ -454,11 +440,7 @@ fun NavigationGraph(navController: NavHostController,
         }
 //        composable(Destinations.PlanScreenWithId.route + "/{location}", arguments = listOf(navArgument("location")  { type = NavType.StringType })
         composable(Destinations.PlanScreen.route ) {
-            PlanScreen(planViewModel, navController, sharedPref)
-        }
-
-        composable(Destinations.TestScreen.route) {
-            TestScreen(navController)
+            PlanScreen(planViewModel, navController, geoFencingClient)
         }
         composable(Destinations.SettingsScreen.route) {
             SettingsScreen(navController, authViewModel)
@@ -466,7 +448,7 @@ fun NavigationGraph(navController: NavHostController,
         composable(Destinations.LocationDetailsScreen.route + "/{location}", arguments = listOf(navArgument("location")  { type = NavType.StringType })
         ) { backStackEntry ->
             val location = backStackEntry.arguments?.getString("location")
-            LocationDetailsScreen(navController, locationDetailsViewModel, location)
+            LocationDetailsScreen(locationDetailsViewModel, location)
         }
     }
 }
