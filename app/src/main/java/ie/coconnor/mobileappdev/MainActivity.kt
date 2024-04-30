@@ -14,6 +14,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,14 +54,15 @@ import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.AndroidEntryPoint
-import ie.coconnor.mobileappdev.models.AuthState
 import ie.coconnor.mobileappdev.models.Constants.BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE
 import ie.coconnor.mobileappdev.models.Constants.Geofencing.LOCATION_FASTEST_INTERVAL
 import ie.coconnor.mobileappdev.models.Constants.Geofencing.LOCATION_INTERVAL
 import ie.coconnor.mobileappdev.models.Constants.Geofencing.REQUEST_CHECK_SETTINGS
 import ie.coconnor.mobileappdev.models.Constants.Geofencing.REQUEST_CODE
 import ie.coconnor.mobileappdev.models.Constants.LOCATION_PERMISSION_REQUEST_CODE
-import ie.coconnor.mobileappdev.models.DataProvider
+import ie.coconnor.mobileappdev.models.auth.AuthState
+import ie.coconnor.mobileappdev.models.auth.AuthViewModel
+import ie.coconnor.mobileappdev.models.auth.DataProvider
 import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
 import ie.coconnor.mobileappdev.models.locations.LocationsViewModel
 import ie.coconnor.mobileappdev.models.plan.PlanViewModel
@@ -73,8 +75,7 @@ import ie.coconnor.mobileappdev.ui.login.LoginScreen
 import ie.coconnor.mobileappdev.ui.navigation.BottomBar
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.ui.plan.PlanScreen
-import ie.coconnor.mobileappdev.ui.screens.SettingsScreen
-import ie.coconnor.mobileappdev.ui.screens.TestScreen
+import ie.coconnor.mobileappdev.ui.settings.SettingsScreen
 import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
 import ie.coconnor.mobileappdev.utils.SharedPref
 import ie.coconnor.mobileappdev.utils.UIThemeController
@@ -107,7 +108,7 @@ class MainActivity : ComponentActivity() {
     }
 
 
-//    lateinit var textToSpeech: TextToSpeech
+    lateinit var textToSpeech: TextToSpeech
 
 
     @OptIn(ExperimentalPermissionsApi::class)
@@ -118,6 +119,18 @@ class MainActivity : ComponentActivity() {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+        }
+
+//        textToSpeech.language = Locale.US
+
+        textToSpeech = TextToSpeech(this) {status ->
+            if (status == TextToSpeech.SUCCESS){
+                Timber.tag("TAG").d("TextToSpeech Initialization Success")
+//                textToSpeech.speak("test text to speech", TextToSpeech.QUEUE_FLUSH, null, null)
+
+            }else{
+                Timber.tag("TAG").d("TextToSpeech Initialization Failed")
+            }
         }
 
         Timber.tag(TAG).i("Creating geofence client")
@@ -412,7 +425,7 @@ fun NavigationGraph(navController: NavHostController,
                     planViewModel: PlanViewModel,
                     sharedPref: SharedPref,
                     geoFencingClient: GeofencingClient) {
-    var startDestination = Destinations.TestScreen.route
+    var startDestination = Destinations.LocationsScreen.route
 
     if (DataProvider.authState == AuthState.SignedOut)
     {
@@ -427,11 +440,7 @@ fun NavigationGraph(navController: NavHostController,
         }
 //        composable(Destinations.PlanScreenWithId.route + "/{location}", arguments = listOf(navArgument("location")  { type = NavType.StringType })
         composable(Destinations.PlanScreen.route ) {
-            PlanScreen(planViewModel, navController, sharedPref, geoFencingClient)
-        }
-
-        composable(Destinations.TestScreen.route) {
-            TestScreen(navController)
+            PlanScreen(planViewModel, navController, geoFencingClient)
         }
         composable(Destinations.SettingsScreen.route) {
             SettingsScreen(navController, authViewModel)
@@ -439,7 +448,7 @@ fun NavigationGraph(navController: NavHostController,
         composable(Destinations.LocationDetailsScreen.route + "/{location}", arguments = listOf(navArgument("location")  { type = NavType.StringType })
         ) { backStackEntry ->
             val location = backStackEntry.arguments?.getString("location")
-            LocationDetailsScreen(navController, locationDetailsViewModel, location)
+            LocationDetailsScreen(locationDetailsViewModel, location)
         }
     }
 }

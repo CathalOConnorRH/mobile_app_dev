@@ -28,7 +28,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -55,6 +54,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
@@ -68,13 +69,12 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import ie.coconnor.mobileappdev.R
-import ie.coconnor.mobileappdev.models.Address
-import ie.coconnor.mobileappdev.models.Location
+import ie.coconnor.mobileappdev.models.locations.Address
+import ie.coconnor.mobileappdev.models.locations.Location
 import ie.coconnor.mobileappdev.models.locations.LocationsViewModel
 import ie.coconnor.mobileappdev.ui.navigation.Destinations
 import ie.coconnor.mobileappdev.utils.SharedPref
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LocationsScreen(viewModel: LocationsViewModel,
@@ -109,7 +109,7 @@ fun LocationsScreen(viewModel: LocationsViewModel,
         }
     ) {
         Column {
-            if (locations?.data?.isNullOrEmpty() == true) {
+            if (locations?.data?.isEmpty() == true) {
                 // Show loading indicator or placeholder
                 Text(text = "Loading...")
             } else {
@@ -133,7 +133,6 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                             Button(
                                 onClick = {
                                     showDialog = false
-                                    location = location
                                     viewModel.fetchTours(location, tripAdvisorApiKey)
                                 }
                             ) {
@@ -182,13 +181,13 @@ fun LocationsScreen(viewModel: LocationsViewModel,
     }
 }
 
-//@Preview(group = "Locations")
-//@Composable
-//fun PreviewStandCardItem(
-//    @PreviewParameter(SampleLocationProvider::class) location: Location,
-//){
-//    StandardLocationCard(location = location, trips = trips)
-//}
+@Preview(group = "Locations")
+@Composable
+fun PreviewStandCardItem(
+    @PreviewParameter(SampleLocationProvider::class) location: Location,
+){
+//    StandardLocationCard(location = location, trips)
+}
 
 @Composable
 fun StandardLocationCard(
@@ -306,7 +305,7 @@ fun StandardLocationCard(
                         }
 
                         val shareIntent = Intent.createChooser(sendIntent, null)
-                        var context = LocalContext.current
+                        val context = LocalContext.current
 
                         IconButton(onClick = {
                             startActivity(context, shareIntent, null)

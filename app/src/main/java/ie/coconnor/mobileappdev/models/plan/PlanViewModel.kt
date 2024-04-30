@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ie.coconnor.mobileappdev.models.Location
+import ie.coconnor.mobileappdev.models.locations.Location
 import ie.coconnor.mobileappdev.repository.FirestoreRepository
 import ie.coconnor.mobileappdev.repository.Trip
 import kotlinx.coroutines.launch

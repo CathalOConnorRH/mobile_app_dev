@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ie.coconnor.mobileappdev.models.Location
-import ie.coconnor.mobileappdev.models.LocationResponse
 import ie.coconnor.mobileappdev.repository.FirestoreRepository
 import ie.coconnor.mobileappdev.repository.LocationsRepository
 import ie.coconnor.mobileappdev.repository.Trip
@@ -51,20 +49,6 @@ class LocationsViewModel() : ViewModel() {
                 Timber.tag(TAG).e( e.message.toString());
             }
         }
-    }
-    fun updateTrip(location: Location, documentName: String): Boolean{
-        var saved: Boolean = false
-        viewModelScope.launch {
-            try {
-                Timber.tag(TAG).i( location.name)
-                val cards = fireStoreRepository.updateTrip(location, documentName)
-                saved = true
-            } catch (e: Exception){
-                Timber.tag(TAG).e( e.message.toString());
-            }
-            return@launch
-        }
-        return saved
     }
 
     fun createTrip(location: Location){

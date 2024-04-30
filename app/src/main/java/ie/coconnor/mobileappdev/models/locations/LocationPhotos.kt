@@ -1,4 +1,4 @@
-package ie.coconnor.mobileappdev.models
+package ie.coconnor.mobileappdev.models.locations
 
 import com.google.gson.annotations.SerializedName
 

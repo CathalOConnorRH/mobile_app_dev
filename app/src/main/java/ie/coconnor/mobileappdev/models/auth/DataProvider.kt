@@ -1,11 +1,14 @@
-package ie.coconnor.mobileappdev.models
+package ie.coconnor.mobileappdev.models.auth
 
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseUser
+import ie.coconnor.mobileappdev.models.FirebaseSignInResponse
+import ie.coconnor.mobileappdev.models.OneTapSignInResponse
 import ie.coconnor.mobileappdev.models.Response.Success
+import ie.coconnor.mobileappdev.models.SignOutResponse
 
 enum class AuthState {
     Authenticated, SignedIn, SignedOut;
@@ -31,7 +34,7 @@ object DataProvider {
         private set
 
     fun updateAuthState(user: FirebaseUser?) {
-        this.user = user
+        DataProvider.user = user
         isAuthenticated = user != null
         isAnonymous = user?.isAnonymous ?: false
 
@@ -43,13 +46,13 @@ object DataProvider {
     }
 
     fun getDisplayName(user: FirebaseUser?): String{
-        this.user = user
+        DataProvider.user = user
         val displayName = user!!.displayName
         return displayName.toString()
     }
 
     fun getProfilePhoto(user: FirebaseUser?): String{
-        this.user = user
+        DataProvider.user = user
         val photoUrl = user!!.photoUrl
         return photoUrl.toString().replace("s96", "s250")
     }

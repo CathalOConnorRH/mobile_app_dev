@@ -1,15 +1,14 @@
 package ie.coconnor.mobileappdev.repository
 
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.toObjects
 import ie.coconnor.mobileappdev.models.Constants
-import ie.coconnor.mobileappdev.models.DataProvider
-import ie.coconnor.mobileappdev.models.Location
+import ie.coconnor.mobileappdev.models.auth.DataProvider
+import ie.coconnor.mobileappdev.models.locations.Location
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 
 class FirestoreRepository {
-    val collectionName = "trips"
+    private val collectionName = "trips"
     suspend fun getTrips(): List<Trip> {
         println(DataProvider.user?.uid)
         val querySnapshot = Constants.db.collection(collectionName)
@@ -17,7 +16,7 @@ class FirestoreRepository {
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    Timber.tag(TAG).i("Trips recevied => ${document.toString()}")
+                    Timber.tag(TAG).i("Trips received => ${document.toString()}")
                 }
             }
             .addOnFailureListener { e ->
@@ -28,20 +27,6 @@ class FirestoreRepository {
         return querySnapshot.toObjects<Trip>()
     }
 
-    suspend fun updateTrip(location: Location, documentName: String): String{
-
-//        val trip = Trip(
-//            documentName,
-//            DataProvider.user?.uid
-//        )
-
-        var trips = Constants.db.collection(collectionName).document(documentName)
-            .update("locations", FieldValue.arrayUnion(location))
-            .addOnSuccessListener { Timber.tag(TAG).d("DocumentSnapshot successfully written!") }
-            .addOnFailureListener { e -> Timber.tag(TAG).e( "Error writing document $e") }.await()
-        return trips.toString()
-        return ""
-    }
     suspend fun createTrip(location: Location){
         val trip = Trip(
             location,
@@ -57,9 +42,8 @@ class FirestoreRepository {
     suspend fun removeLocation(selectedLocation: String) {
         Constants.db.collection(collectionName).document(selectedLocation + "::" + DataProvider.user?.uid)
             .delete()
-            .addOnSuccessListener { Timber.tag(TAG).i("Document ${selectedLocation} successfully deleted!") }
-            .addOnFailureListener { e ->Timber.tag(TAG).e("Error deleting document ${e}") }.await()
-
+            .addOnSuccessListener { Timber.tag(TAG).i("Document $selectedLocation successfully deleted!") }
+            .addOnFailureListener { e ->Timber.tag(TAG).e("Error deleting document $e") }.await()
     }
 
     companion object {

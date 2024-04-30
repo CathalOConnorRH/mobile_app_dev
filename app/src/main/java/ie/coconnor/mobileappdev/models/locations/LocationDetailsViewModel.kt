@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ie.coconnor.mobileappdev.models.LocationDetails
 import ie.coconnor.mobileappdev.repository.LocationsRepository
 import kotlinx.coroutines.launch
 import retrofit2.HttpException

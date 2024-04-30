@@ -1,11 +1,9 @@
 package ie.coconnor.mobileappdev.service
 
-import ie.coconnor.mobileappdev.models.LocationDetails
-import ie.coconnor.mobileappdev.models.LocationDetailsResponse
-import ie.coconnor.mobileappdev.models.LocationPhotosResponse
-import ie.coconnor.mobileappdev.models.LocationResponse
+import ie.coconnor.mobileappdev.models.locations.LocationDetails
+import ie.coconnor.mobileappdev.models.locations.LocationPhotosResponse
+import ie.coconnor.mobileappdev.models.locations.LocationResponse
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Path
 import retrofit2.http.Query

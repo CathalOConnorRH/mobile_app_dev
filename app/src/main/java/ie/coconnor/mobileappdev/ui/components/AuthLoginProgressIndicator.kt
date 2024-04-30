@@ -1,4 +1,4 @@
-package ie.coconnor.mobileappdev.ui.component
+package ie.coconnor.mobileappdev.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
