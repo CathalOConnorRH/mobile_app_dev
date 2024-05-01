@@ -172,7 +172,6 @@ fun SettingsScreen(navController: NavHostController, authViewModel: AuthViewMode
                     modifier = Modifier,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    println(DataProvider.getProfilePhoto(user))
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(DataProvider.getProfilePhoto(user))

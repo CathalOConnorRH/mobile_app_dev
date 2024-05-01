@@ -156,11 +156,8 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                         locations?.let {
                             items(it.data) { location ->
                                 var saved = false
-                                println("Trips ${trips?.size.toString()}")
                                 trips?.forEach { trip ->
-                                    println(trip.location?.location_id.toString())
                                     if(trip.location?.location_id?.contains(location.location_id.toString()) == true) {
-                                        println(location.name)
                                         location.saved = true
                                         saved = true
                                     }
@@ -172,7 +169,7 @@ fun LocationsScreen(viewModel: LocationsViewModel,
                                     sharedPref = sharedPref,
                                     saved = saved
                                 )
-                                Spacer(modifier = Modifier.height(10.dp)) // Add a divider between items
+                                Spacer(modifier = Modifier.height(10.dp))
                             }
                         }
                     }

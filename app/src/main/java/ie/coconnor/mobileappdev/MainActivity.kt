@@ -1,12 +1,9 @@
-@file:OptIn(ExperimentalPermissionsApi::class)
-
 package ie.coconnor.mobileappdev
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Intent
 import android.content.IntentSender
@@ -15,7 +12,6 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,10 +36,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -66,7 +60,6 @@ import ie.coconnor.mobileappdev.models.auth.DataProvider
 import ie.coconnor.mobileappdev.models.locations.LocationDetailsViewModel
 import ie.coconnor.mobileappdev.models.locations.LocationsViewModel
 import ie.coconnor.mobileappdev.models.plan.PlanViewModel
-import ie.coconnor.mobileappdev.receiver.GeofenceBroadcastReceiver
 import ie.coconnor.mobileappdev.service.BootReceiver
 import ie.coconnor.mobileappdev.service.LocationForegroundService
 import ie.coconnor.mobileappdev.ui.locations.LocationDetailsScreen
@@ -88,30 +81,17 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var sharedPref: SharedPref
 
-    val authViewModel by viewModels<AuthViewModel>()
-    val tourViewModel by viewModels<LocationsViewModel>()
-    val locationDetailsViewModel by viewModels<LocationDetailsViewModel> ()
-    val planViewModel by viewModels<PlanViewModel>()
+    private val authViewModel by viewModels<AuthViewModel>()
+    private val tourViewModel by viewModels<LocationsViewModel>()
+    private val locationDetailsViewModel by viewModels<LocationDetailsViewModel> ()
+    private val planViewModel by viewModels<PlanViewModel>()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    lateinit var geofencingClient: GeofencingClient
-    private val geofenceList = mutableListOf<Geofence>()
+    private lateinit var geofencingClient: GeofencingClient
 
-    private val geofencePendingIntent: PendingIntent by lazy {
-        val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
-        PendingIntent.getBroadcast(
-            this,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-        )
-    }
+    private lateinit var textToSpeech: TextToSpeech
 
 
-    lateinit var textToSpeech: TextToSpeech
-
-
-    @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,12 +101,9 @@ class MainActivity : ComponentActivity() {
             Timber.plant(Timber.DebugTree())
         }
 
-//        textToSpeech.language = Locale.US
-
         textToSpeech = TextToSpeech(this) {status ->
             if (status == TextToSpeech.SUCCESS){
                 Timber.tag("TAG").d("TextToSpeech Initialization Success")
-//                textToSpeech.speak("test text to speech", TextToSpeech.QUEUE_FLUSH, null, null)
 
             }else{
                 Timber.tag("TAG").d("TextToSpeech Initialization Failed")
@@ -166,22 +143,12 @@ class MainActivity : ComponentActivity() {
             checkAndRequestLocationPermissions()
         }
         WindowCompat.setDecorFitsSystemWindows(window, true)
-//        window.setFlags(
-//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-//            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-//
-//        )
-//        window.setTitle("Test")
         createLocationRequest()
-//        createGeofence()
 
         setContent {
             val isDarkMode by UIThemeController.isDarkMode.collectAsState()
             MobileAppDevTheme (darkTheme = isDarkMode){
-
                 val navController = rememberNavController()
-                var buttonsVisible = remember { mutableStateOf(true) }
-
                 val currentUser = authViewModel.currentUser.collectAsState().value
                 DataProvider.updateAuthState(currentUser)
 
@@ -193,7 +160,6 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         BottomBar(
                             navController = navController,
-                            state = buttonsVisible,
                             modifier = Modifier
                         )
                     },
@@ -208,25 +174,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun areLocationPermissionsAlreadyGranted(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    }
-
-//    private fun openApplicationSettings() {
-//        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)).also {
-//            startActivity(it)
-//        }
-//    }
-
-    private fun decideCurrentPermissionStatus(locationPermissionsGranted: Boolean,
-                                              shouldShowPermissionRationale: Boolean): String {
-        return if (locationPermissionsGranted) "Granted"
-        else if (shouldShowPermissionRationale) "Rejected"
-        else "Denied"
-    }
-
     private fun currentLocation() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (ActivityCompat.checkSelfPermission(
@@ -237,19 +184,12 @@ class MainActivity : ComponentActivity() {
                 ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return
         }
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 val latlng = LatLng(location.latitude, location.longitude)
-                println(latlng)
+                Timber.tag(TAG).i("${latlng.toString()}")
 
             }
         }
@@ -271,11 +211,11 @@ class MainActivity : ComponentActivity() {
         val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
 
         task.addOnSuccessListener {
-            Log.i("Location", " Enable Successful")
+            Timber.tag(TAG).i("Location Enable Successful")
 
         }
         task.addOnFailureListener { exception ->
-            Log.i("Location", exception.message.toString())
+            Timber.tag(TAG).e("Location ${exception.message.toString()}")
             if (exception is ResolvableApiException) {
                 try {
                     exception.startResolutionForResult(
@@ -284,45 +224,11 @@ class MainActivity : ComponentActivity() {
                     )
                 } catch (sendEx: IntentSender.SendIntentException) {
                     // Ignore the error.
-                    println(sendEx)
+                    Timber.tag(TAG).e("$sendEx")
                 }
             }
         }
     }
-//    private fun createGeofence(){
-//        geofenceList.add(
-//            Geofence.Builder()
-//                .setRequestId("entry.key")
-//                .setCircularRegion(52.2598299, -7.1085459, RADIUS)
-//                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-//                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
-//                .build()
-//        )
-//        addGeofenceRequest()
-//
-//    }
-//    @SuppressLint("MissingPermission")
-//    private fun addGeofenceRequest() {
-//        geofencingClient.addGeofences(getGeofenceRequest(), geofencePendingIntent).run {
-//            addOnSuccessListener {
-//                Toast.makeText(
-//                    this@MainActivity,
-//                    "Geofence is added successfully",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//            }
-//            addOnFailureListener {
-//                Log.e("Error", it.localizedMessage)
-//                Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
-//    private fun getGeofenceRequest(): GeofencingRequest {
-//        return GeofencingRequest.Builder().apply {
-//            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-//            addGeofences(geofenceList)
-//        }.build()
-//    }
 
     private fun checkBackGroundLocationPermission(): Boolean {
         return  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -387,11 +293,11 @@ class MainActivity : ComponentActivity() {
         val permission = android.Manifest.permission.POST_NOTIFICATIONS
         when {
             ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
-                // make your action here
                 checkAndRequestLocationPermissions()
             }
             shouldShowRequestPermissionRationale(permission) -> {
                 // permission denied permanently
+                Timber.tag(TAG).i("Permission denied permanently")
             }
             else -> {
                 requestNotificationPermission.launch(permission)
@@ -401,7 +307,7 @@ class MainActivity : ComponentActivity() {
 
     private val requestNotificationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted->
-            if (isGranted) // make your action here
+            if (isGranted)
                 checkAndRequestLocationPermissions()
     }
     private fun startLocationService() {
@@ -438,7 +344,6 @@ fun NavigationGraph(navController: NavHostController,
         composable(Destinations.LocationsScreen.route) {
             LocationsScreen(tourViewModel, navController , sharedPref)
         }
-//        composable(Destinations.PlanScreenWithId.route + "/{location}", arguments = listOf(navArgument("location")  { type = NavType.StringType })
         composable(Destinations.PlanScreen.route ) {
             PlanScreen(planViewModel, navController, geoFencingClient)
         }
@@ -465,7 +370,6 @@ fun NavigationGraph(navController: NavHostController,
 @Composable
 fun MobileAppDevPreview() {
     MobileAppDevTheme {
-
     }
 }
 

@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -46,7 +43,6 @@ fun UserRatingBar(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun StarIcon(
     size: Dp,
@@ -73,12 +69,12 @@ fun StarIcon(
 @Preview
 @Composable
 fun PreviewUserRatingBar() {
-    val ratingState = remember { mutableIntStateOf(0) }
+    val ratingState = 4.0f
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        UserRatingBar(ratingState = 4.5f)
+        UserRatingBar(ratingState = ratingState)
     }
 }

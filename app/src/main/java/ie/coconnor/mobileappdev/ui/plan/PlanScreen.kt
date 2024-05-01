@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,15 +17,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Map
@@ -35,8 +30,6 @@ import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +37,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -57,9 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -67,8 +57,6 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
-import androidx.wear.compose.material.ContentAlpha
-import androidx.wear.compose.material.LocalContentAlpha
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.GeofencingRequest
@@ -79,7 +67,6 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.Constants.Geofencing.RADIUS
 import ie.coconnor.mobileappdev.models.auth.DataProvider
 import ie.coconnor.mobileappdev.models.plan.PlanViewModel
@@ -97,6 +84,7 @@ fun PlanScreen(
     navController: NavController,
     geofencingClient: GeofencingClient)
 {
+    val TAG = "PlanScreen"
     val trips by viewModel.trips.observeAsState()
     var showPopup by rememberSaveable { mutableStateOf(false) }
     val tourButton = remember { mutableStateOf("Start Tour") }
@@ -177,7 +165,7 @@ fun PlanScreen(
                     OutlinedButton(
                         onClick = {
                             if (tourButton.value == "Start Tour") {
-                                println("Start geofence")
+                                Timber.tag(TAG).i("Start geofence tour")
 
                                 for (trip in trips!!) {
                                     createGeofence(
@@ -189,6 +177,7 @@ fun PlanScreen(
                                 }
                                 tourButton.value = "Stop Tour"
                             } else {
+                                Timber.tag(TAG).i("Stop geofence tour")
                                 removeGeofence(geofencingClient, context)
                                 tourButton.value = "Start Tour"
                             }
@@ -256,29 +245,6 @@ fun PlanScreen(
                             )
                         }
                         Spacer(modifier = Modifier.height(40.dp))
-
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-
-                            OutlinedButton(
-                                onClick = {
-                                    navController.navigate(Destinations.LocationsScreen.route)
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                shape = RoundedCornerShape(10.dp),
-                            ) {
-                                Text(
-                                    text = "+\tCreate a new trip",
-                                    modifier = Modifier.padding(6.dp),
-                                    fontSize = 15.sp,
-                                    color = MaterialTheme.colorScheme.onBackground
-                                )
-                            }
-                        }
                     }
                 } else {
                     Column(
@@ -311,9 +277,6 @@ fun PlanScreen(
                                         swipeThreshold = 200.dp,
                                         endActions = listOf(delete)
                                     ) {
-//                                        StandardPlanCard(
-//                                            trip = trip
-//                                        )
                                         ExpandableCard(
                                             title = trip.location?.name.toString(),
                                             description = trip.location?.location_details?.description.toString()
@@ -405,20 +368,13 @@ fun getGeofenceRequest(geofenceList: MutableList<Geofence>): GeofencingRequest {
 
 @SuppressLint("MissingPermission")
 fun addGeofenceRequest(context: Context, geofencingClient: GeofencingClient, geofencePendingIntent: PendingIntent, geofenceList: MutableList<Geofence>) {
-
+    val TAG = "addGeofenceRequest"
     if (ActivityCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED
     ) {
-        println("Missing permissions")
-        // TODO: Consider calling
-        //    ActivityCompat#requestPermissions
-        // here to request the missing permissions, and then overriding
-        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-        //                                          int[] grantResults)
-        // to handle the case where the user grants the permission. See the documentation
-        // for ActivityCompat#requestPermissions for more details.
+        Timber.tag(TAG).e("Missing permissions")
         return
     }
     geofencingClient.addGeofences(getGeofenceRequest(geofenceList), geofencePendingIntent).run {
@@ -428,17 +384,18 @@ fun addGeofenceRequest(context: Context, geofencingClient: GeofencingClient, geo
                 "Geofence is added successfully",
                 Toast.LENGTH_SHORT
             ).show()
-            Timber.tag("TAG").i("Geofence added")
+            Timber.tag(TAG).i("Geofence added")
 
         }
         addOnFailureListener {
-            Timber.tag("TAG").e("Error ${it.localizedMessage}")
+            Timber.tag(TAG).e("Error ${it.localizedMessage}")
             Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
         }
     }
 }
 
 fun removeGeofence(geofencingClient: GeofencingClient, context: Context) {
+    val TAG = "removeGeofence"
     val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
     val geofencePendingIntent = PendingIntent.getBroadcast(
         context,
@@ -448,10 +405,10 @@ fun removeGeofence(geofencingClient: GeofencingClient, context: Context) {
     )
     geofencingClient.removeGeofences(geofencePendingIntent).run {
         addOnSuccessListener {
-            Timber.tag("TAG").i("Geofence Removed")
+            Timber.tag(TAG).i("Geofence Removed")
         }
         addOnFailureListener {
-            Timber.tag("TAG").e("Error ${it.localizedMessage}")
+            Timber.tag(TAG).e("Error ${it.localizedMessage}")
         }
     }
 }
@@ -480,82 +437,6 @@ fun createGeofence(geofenceList: MutableList<Geofence>, context: Context, geofen
     )
     addGeofenceRequest(context, geofencingClient ,geofencePendingIntent, geofenceList )
 
-}
-//@Preview
-//@Composable
-//fun PlanScreenPreview(
-//    viewModel: PlanViewModel = hiltViewModel(),
-//    navController: NavController = rememberNavController(),
-//    sharedPref: SharedPref? = null,
-//    geofencingClient: GeofencingClient
-//) {
-//    if (sharedPref != null) {
-//        PlanScreen(viewModel, navController, sharedPref, geofencingClient)
-//    }
-//}
-
-@Composable
-fun StandardPlanCard(
-    trip: Trip,
-    modifier: Modifier = Modifier,
-    shape: CornerBasedShape = MaterialTheme.shapes.extraLarge
-) {
-    ElevatedCard(
-        shape = shape,
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 36.dp
-        ),
-        modifier = modifier,
-        onClick = {
-            println("Clicked " + trip.location?.location_id)
-        }
-    ) {
-        Column {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .verticalScroll(rememberScrollState()),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.vector),
-                        contentDescription = null
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(32.dp))
-
-                Column(Modifier.fillMaxWidth()) {
-                    Text(text = trip.location?.name.toString(), style = MaterialTheme.typography.headlineMedium)
-
-                }
-            }
-
-            Row(Modifier.padding(start = 16.dp, end = 24.dp, top = 16.dp)) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        text = trip.location?.location_details?.description.toString(),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-
-
-            }
-        }
-    }
 }
 
 @Composable

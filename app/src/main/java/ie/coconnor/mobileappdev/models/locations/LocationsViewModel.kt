@@ -27,11 +27,9 @@ class LocationsViewModel() : ViewModel() {
         viewModelScope.launch {
             try {
                 val cards = repository.getLocations(tripAdvisorApiKey, location, category)
-                println(cards.data.toString())
                 _locations.value = cards
                 Timber.tag(TAG).i(_locations.value.toString())
             } catch (e: Exception) {
-                // Handle error
                 Timber.tag(TAG).e( e.message.toString());
             }
         }
@@ -41,7 +39,6 @@ class LocationsViewModel() : ViewModel() {
         viewModelScope.launch {
             try {
                 val trips = fireStoreRepository.getTrips()
-                println(trips.toString())
                 _trips.value = trips
                 Timber.tag(TAG).i( _trips.value.toString())
             } catch (e: Exception) {
