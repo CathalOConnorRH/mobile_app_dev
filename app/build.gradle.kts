@@ -37,13 +37,11 @@ android {
         properties.load(keystoreFile.inputStream())
 
         //return empty key in case something goes wrong
-        val maps = properties.getProperty("maps") ?: ""
-        val tripadvisor = properties.getProperty("tripadvisor")
-        val openai = properties.getProperty("openai")
+        val maps = properties.getProperty("maps") ?: "<API_KEY>"
+        val tripadvisor = properties.getProperty("tripadvisor")?: "<API_KEY>"
 
         resValue("string", "maps" , maps)
         resValue("string", "tripadvisor" , tripadvisor)
-        resValue("string", "openai" , openai)
 
         applicationId = "ie.coconnor.mobileappdev"
         minSdk = 25
