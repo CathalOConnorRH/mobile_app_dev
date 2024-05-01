@@ -15,7 +15,7 @@ class FirestoreRepository {
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    Timber.tag(TAG).i("Trips received => $document")
+                    Timber.tag(TAG).i("Trips received => ${document.id}")
                 }
             }
             .addOnFailureListener { e -> Timber.tag(TAG).e("Error getting trips $e") }
