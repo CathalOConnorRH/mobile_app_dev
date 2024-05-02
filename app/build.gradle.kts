@@ -76,7 +76,7 @@ android {
         viewBinding = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"
+        kotlinCompilerExtensionVersion = "1.5.13"
     }
     packaging {
         resources {
@@ -112,14 +112,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // Splash API
     implementation ("androidx.core:core-splashscreen:1.0.1")
     implementation("com.google.android.gms:play-services-auth:21.1.0")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation ("androidx.navigation:navigation-compose:2.7.7")
     implementation ("io.coil-kt:coil-compose:2.6.0")
-    implementation ("androidx.compose.material:material-icons-extended:1.6.6")
+    implementation ("androidx.compose.material:material-icons-extended:1.6.7")
     implementation ("androidx.appcompat:appcompat:1.6.1")
     implementation ("com.firebaseui:firebase-ui-auth:8.0.2")
 
@@ -131,7 +130,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
 
-    implementation ("androidx.compose.runtime:runtime-livedata:1.6.6")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.7")
     implementation ("com.google.android.gms:play-services-maps:18.2.0")
     implementation ("com.google.android.gms:play-services-location:21.2.0")
     implementation ("com.google.maps.android:maps-compose:4.4.1")

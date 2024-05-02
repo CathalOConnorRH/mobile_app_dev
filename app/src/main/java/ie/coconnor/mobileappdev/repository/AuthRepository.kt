@@ -1,11 +1,10 @@
 package ie.coconnor.mobileappdev.repository
 
+import com.google.android.gms.auth.api.identity.SignInCredential
 import ie.coconnor.mobileappdev.models.AuthStateResponse
 import ie.coconnor.mobileappdev.models.FirebaseSignInResponse
 import ie.coconnor.mobileappdev.models.OneTapSignInResponse
 import ie.coconnor.mobileappdev.models.SignOutResponse
-import com.google.android.gms.auth.api.identity.SignInCredential
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.CoroutineScope
 
 interface AuthRepository {

@@ -136,14 +136,12 @@ fun LocationDetailsDisplay(
                     size = 34.dp,
                     selectedColor = Color(0xFF5A966E),
                 )
-                // 3. Current Selected Value Feedback
                 Text(
                     text = "Current Rating: ${locationDetails.rating?.toFloat() ?: 0.0}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp
                 )
             }
-
 
             val locationOnMap = LatLng(locationDetails.latitude?.toDoubleOrNull()!!, locationDetails.longitude?.toDoubleOrNull()!!)
             val cameraPositionState = rememberCameraPositionState {

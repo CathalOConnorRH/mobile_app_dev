@@ -10,18 +10,15 @@ import timber.log.Timber
 class FirestoreRepository {
     private val collectionName = "trips"
     suspend fun getTrips(): List<Trip> {
-        println(DataProvider.user?.uid)
         val querySnapshot = Constants.db.collection(collectionName)
             .whereEqualTo("username", DataProvider.user?.uid)
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    Timber.tag(TAG).i("Trips received => ${document.toString()}")
+                    Timber.tag(TAG).i("Trips received => ${document.id}")
                 }
             }
-            .addOnFailureListener { e ->
-                // Handle any errors
-            }
+            .addOnFailureListener { e -> Timber.tag(TAG).e("Error getting trips $e") }
             .await()
 
         return querySnapshot.toObjects<Trip>()

@@ -46,8 +46,4 @@ class AuthViewModel @Inject constructor(
         DataProvider.signOutResponse = Response.Loading
         DataProvider.signOutResponse = repository.signOut()
     }
-
-    fun signInWithCredentials() = {
-
-    }
 }

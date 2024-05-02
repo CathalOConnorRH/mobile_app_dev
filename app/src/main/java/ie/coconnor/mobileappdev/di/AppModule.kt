@@ -10,12 +10,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.Constants
 import ie.coconnor.mobileappdev.repository.AuthRepository
 import ie.coconnor.mobileappdev.repository.AuthRepositoryImpl
 import javax.inject.Named
 import javax.inject.Singleton
-import ie.coconnor.mobileappdev.R
 
 @Module
 @InstallIn(SingletonComponent::class)

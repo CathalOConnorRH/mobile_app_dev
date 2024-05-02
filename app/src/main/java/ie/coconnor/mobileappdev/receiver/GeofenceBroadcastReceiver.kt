@@ -33,7 +33,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                         if (result == TextToSpeech.LANG_MISSING_DATA
                             || result == TextToSpeech.LANG_NOT_SUPPORTED
                         ) {
-                            println("language is not supported")
+                            Timber.tag(TAG).i("language is not supported")
                             Toast.makeText(context, "language is not supported", Toast.LENGTH_LONG).show()
                         }
                     }

@@ -2,7 +2,6 @@ package ie.coconnor.mobileappdev.ui.login
 
 
 import android.app.Activity
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,22 +24,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ie.coconnor.mobileappdev.models.auth.AuthViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.auth.api.identity.BeginSignInResult
+import com.google.android.gms.common.api.ApiException
 import ie.coconnor.mobileappdev.R
 import ie.coconnor.mobileappdev.models.auth.AuthState
+import ie.coconnor.mobileappdev.models.auth.AuthViewModel
 import ie.coconnor.mobileappdev.models.auth.DataProvider
 import ie.coconnor.mobileappdev.ui.components.AnonymousSignIn
 import ie.coconnor.mobileappdev.ui.components.GoogleSignIn
 import ie.coconnor.mobileappdev.ui.components.OneTapSignIn
 import ie.coconnor.mobileappdev.ui.theme.MobileAppDevTheme
-import com.google.android.gms.auth.api.identity.BeginSignInResult
-import com.google.android.gms.common.api.ApiException
+import timber.log.Timber
 
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
     loginState: MutableState<Boolean>? = null
 ) {
+    val TAG = "LoginScreen"
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             try {
@@ -48,11 +51,11 @@ fun LoginScreen(
                 authViewModel.signInWithGoogle(credentials)
             }
             catch (e: ApiException) {
-                Log.e("LoginScreen:Launcher","Login One-tap $e")
+                Timber.tag(TAG).e("LoginScreen:Launcher Login One-tap $e")
             }
         }
         else if (result.resultCode == Activity.RESULT_CANCELED){
-            Log.e("LoginScreen:Launcher","OneTapClient Canceled")
+            Timber.tag(TAG).e("LoginScreen:Launcher OneTapClient Canceled")
         }
     }
 
@@ -100,7 +103,6 @@ fun LoginScreen(
                         Text(
                             text = "Sign in with Google",
                             modifier = Modifier.padding(6.dp),
-//                        color = Color.Black.copy(alpha = 0.5f)
                         )
                     }
 
@@ -115,7 +117,6 @@ fun LoginScreen(
                         Text(
                             text = "Skip",
                             modifier = Modifier.padding(6.dp),
-//                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }else{
@@ -152,7 +153,6 @@ fun LoginScreen(
     )
 
     GoogleSignIn {
-        // Dismiss LoginScreen
         loginState?.let {
             it.value = false
         }
@@ -162,7 +162,9 @@ fun LoginScreen(
 @Preview
 @Composable
 fun LoginScreenPreview() {
-//    MobileAppDevTheme {
-//    LoginScreen(LoginScreen)
-//    }
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val loginState: MutableState<Boolean>? = null
+    MobileAppDevTheme {
+    LoginScreen(authViewModel, loginState)
+    }
 }

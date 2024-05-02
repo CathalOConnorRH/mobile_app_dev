@@ -9,8 +9,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
-//    @GET("data/{location_id}")
-//    fun getPostById(@Path("location_id") postId: Int): Call<TripadvisorJson>
 
     @GET("location/search")
     @Headers("Referer: http://coconnor.ie")
@@ -27,7 +25,4 @@ interface ApiService {
     @Headers("Referer: http://coconnor.ie")
     suspend fun getLocationPhotos(@Path("location_id") location_id: String,
                                    @Query("key") apiKey: String): LocationPhotosResponse
-//    @GET("location/{location_id}/details")
-//    suspend fun getLocationById(@Path("location_id") id: String,
-//                        @Query("key") apiKey: String): LocationDetails
 }
